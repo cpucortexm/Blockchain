@@ -1,4 +1,4 @@
-# @Filename:    ns_mine.py
+# @Filename:    mine.py
 # @Author:      Yogesh K
 # @Date:        13/10/2021
 """
@@ -32,7 +32,7 @@
 # provides a proof that the miner did some work to add the block to the blockchain
 
 import random
-import ns_block
+import block
 from pylogger import pylog
 
 # Further improvements: use Mine class to init the consensus mechanism using CLI.
@@ -43,14 +43,14 @@ class Proof_Of_Work:
     self.logger = pylog.get_custom_logger(__name__)
     self.difficulty = 4
   
-  def mine_block(self,block):
+  def mine_block(self,block_):
       # Can be directly accessed from the blockchain class
-    calculated_hash = ns_block.NSBlock.derive_hash(block)
+    calculated_hash = block.Block.derive_hash(block_)
     target = '0'.zfill(self.difficulty)
     # keep looping until the calculated hash meets the target
     while(calculated_hash[:self.difficulty].startswith(target) is False):
-      block['nonce'] += random.randrange(1, 1024) # you can also use getrandombits(64bit)
-      calculated_hash = ns_block.NSBlock.derive_hash(block)
+      block_['nonce'] += random.randrange(1, 1024) # you can also use getrandombits(64bit)
+      calculated_hash = block.Block.derive_hash(block_)
       self.logger.info(calculated_hash)
 
     return calculated_hash  # if it exits while, means condition match, return the hash
@@ -65,7 +65,7 @@ class Proof_Of_Stake:
     pass
 
 
-class NSMine:
+class Mine:
   mine_with = None
   
   @classmethod
@@ -88,12 +88,12 @@ def mine_block(any_object):
 @mine_block.register
 def _(any_object: Proof_Of_Work, block):
   # Can be directly accessed from the blockchain class
-  calculated_hash = ns_block.NSBlock.derive_hash(block)        
+  calculated_hash = block.Block.derive_hash(block)        
   target = '0'.zfill(any_object.difficulty)
   # keep looping until the calculated hash meets the target
   while(calculated_hash[:any_object.difficulty].startswith(target) is False):
     block['nonce'] += random.randrange(1, 1024) # you can also use getrandombits(64bit)
-    calculated_hash = ns_block.NSBlock.derive_hash(block)
+    calculated_hash = block.Block.derive_hash(block)
 
   return calculated_hash  # if it exits while, means condition match, return the hash
 

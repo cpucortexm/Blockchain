@@ -1,4 +1,4 @@
-# @Filename:    ns_blockchain_test.py
+# @Filename:    blockchain_test.py
 # @Author:      Yogesh K
 # @Date:        13/10/2021
 """
@@ -18,7 +18,7 @@
     along with ns-chain.  If not, see <https://www.gnu.org/licenses/>.
  """
 import unittest
-from ns_blockchain import NSChain
+from blockchain import Chain
 
 # test an existing blockchain
 
