@@ -1,0 +1,43 @@
+Difference Full nodes vs Miners ? check also https://braiins.com/blog/bitcoin-nodes-vs-miners-demystified#toc-how-miners-and-nodes-handle-bitcoin-transactions
+
+Running a node is just listening for other nodes to pass you data, checking that its valid, and passing it in further.
+So a peer will tell you "block 12345573 has parent x, is at height y, has transactions a,b,and c, its nonce is 73626
+and its hash is a6h54fwj". When you run a node, your job is to just check that those details are valid and that the hash
+lines up and to pass that data onto anyone else that might not know it yet.
+
+When you're mining, you're listening for new transactions, so some random peer will tell you "x wants to send y btc to z,
+here's his signature ". And as a miner your job is to collect a few if these, add in the other data above (parent block),
+and randomly append millions of possible nonces until the resulting hash follows the rules of the bitcoin network.
+Once you have that hash, you transmit that block back to regular nodes to further distribute around the network.
+
+
+The existing answer is great, but I'd like to provide another perspective.
+A (full) node contains the whole block chain. With this knowledge this node can check if new transactions actually are OK.
+Furthermore, one can see the number of bitcoins which currently are available for any address. Essentially, a full node can
+do what you can see on www.blockchain.info. One typically runs a full node just as a client (as I do on my notebook), or as
+a support for the network (as I do on a server) so that thin clients like phones can make use of their knowledge.
+
+Although not strictly necessary, a miner is a full node as above (so with complete knowledge of the block chain) which
+additionally creates new blocks. The purpose of new blocks is that new transactions are confirmed, and by making it difficult
+to find new blocks one can be (very) sure that there are no other (confirmed) transactions which contradict the transactions
+in the new block. These new blocks, if found, are added to the block chain and are available on all full nodes. One typically
+runs mining nodes to find blocks and earn the reward of found blocks (currently 25 bitcoins per block).
+
+
+
+A 'full node' is a participant on the network that has independently validated the complete copy of the blockchain, and thus
+has verified all transactions since the beginning. This requires about 350GB of drive space (currently).
+
+A pruning node is one that has verified all prior transactions; however, it has deleted all blocks below a certain space requirement,
+but still has a copy of the UXTO set. It's less useful to the community, but is useful to the node's owner, and takes less resources
+on the computer (can be under 1GB of drive space).
+
+A miner on the other hand creates blocks in the blockchain which the nodes keep. Basically, the miner adds transactions to a block,
+with the goal of creating a new block with a valid hash that will be accepted by the network. Miners spend about 10 minutes working
+on a problem, but nodes keep that result forever after in the database and verify it with others. Miners don't need to know about
+prior blocks (except for the prior one) with very few exceptions.
+
+So, a miner is completely different than a full node. It's not comparing the same like things. Full vs Light is comparing two
+like things - fruit (apple and orange). Miner vs FullNode is comparing two totally different things (apple and fence).
+
+============================================================================================================================================
