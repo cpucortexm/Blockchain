@@ -17,9 +17,11 @@ VERSION  = '00'
 
 class Wallet:
     def __init__(self, prikey=None, pubkey=None):
-        self.private_key = prikey   # keys will be byte arrays
+        self.private_key = prikey   # keys will be hex-strings
         self.public_key  = pubkey
+        self.wallet_keys = [self.private_key, self.public_key]  # store the keys as list
         self.logger = pylog.get_logger(__name__)
+
 
     # Takes public key and calculates hash for this key
     # return hex-string using RIPEMD160 to calculate hash.
@@ -50,9 +52,9 @@ class Wallet:
         fullHash      = versionedHash + checksum # version + pubkeyhash + checksum
         fullHash      = bytes.fromhex(fullHash)  # convert hex-string to bytes
         address       = utils.base58_encode(fullHash)
-        self.logger.info("Pub Key:%s", self.public_key)
-        self.logger.info("Pub Hash:%s", pubkeyHash)
-        self.logger.info("Wallet Address:%s",address)
+        #self.logger.info("Pub Key:%s", self.public_key)
+        #self.logger.info("Pub Hash:%s", pubkeyHash)
+        #self.logger.info("Wallet Address:%s",address)
         return address
 
 
@@ -74,8 +76,8 @@ class key_pair:    # generate new private and public keys for wallet
 
 
 
-kp = key_pair()
-w = kp.make_wallet()
-w.generate_wallet_address()
+#kp = key_pair()
+#w = kp.make_wallet()
+#w.generate_wallet_address()
 
 

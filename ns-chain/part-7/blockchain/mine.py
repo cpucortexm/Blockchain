@@ -64,6 +64,11 @@ class Proof_Of_Stake:
   def mine_block(block):
     pass
 
+# When to use class variables:
+# 1.) Storing constants e.g. PI. As class attributes can be accessed as attributes of the class itself
+# 2.) Storing default values such as max list length
+# 3.) Tracking data across all instances of a given class OR getting to know how many instances 
+#     of the given class.
 
 class Mine:
   mine_with = None

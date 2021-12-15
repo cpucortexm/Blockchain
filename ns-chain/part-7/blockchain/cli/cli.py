@@ -24,39 +24,53 @@ from blockchain import Chain
 from pylogger import pylog
 import blockchain_test
 import tx
-import wallet
+import wallets
 
 
 def print_blockchain():
-  bc.print_nschain()
+    bc.print_nschain()
 
 def create_blockchain(args):
-  logger.info("Adding address to the chain : %s", args.address)
-  bc.init_blockchain(args.address)
-  logger.info("Finished!")
+    logger.info("Adding address to the chain : %s", args.address)
+    bc.init_blockchain(args.address)
+    logger.info("Finished!")
 
 def get_balance(args):
-  chain = bc.continue_blockchain(args.address)  # to check if blockchain exists
-  balance = 0
-  UTXOs = Chain.find_UTXO(args.address)
+    chain = bc.continue_blockchain(args.address)  # to check if blockchain exists
+    balance = 0
+    UTXOs = Chain.find_UTXO(args.address)
 
-  for out in UTXOs:
-    balance += out.value
+    for out in UTXOs:
+      balance += out.value
 
-  logger.info("Balance of %s:%d", args.address, balance)
+    logger.info("Balance of %s:%d", args.address, balance)
 
 def send(args):
-  chain = bc.continue_blockchain(args.comingfrom) # to check if blockchain exists
-  transaction = tx.New_Transaction(args.comingfrom, args.to, args.amount)
-  bc.add_block(transaction)
-  logger.info("Success!")
+    chain = bc.continue_blockchain(args.comingfrom) # to check if blockchain exists
+    transaction = tx.New_Transaction(args.comingfrom, args.to, args.amount)
+    bc.add_block(transaction)
+    logger.info("Success!")
+
+
+def list_wallet_addresses():
+    ws = wallets.Wallets()
+    #ws.create_wallets()
+    addresses = ws.get_all_wallet_addresses()
+    for addr in addresses:
+      logger.info(addr)
+
+def create_wallet():
+    ws = wallets.Wallets()
+    address = ws.add_wallet()
+    ws.save_to_file()
+    logger.info("New address is:%s", address)
 
 def test_chain():
-  # Set the static class variable of test file(=blockchain) to the blockchain(bc) to be tested
-  # There can be other better methods like using parameterized constructors with pytest,
-  # instead of using static class variables for writing tests.
-  blockchain_test.TestNSChain.blockchain = bc
-  blockchain_test.start_blockchain_tests()
+    # Set the static class variable of test file(=blockchain) to the blockchain(bc) to be tested
+    # There can be other better methods like using parameterized constructors with pytest,
+    # instead of using static class variables for writing tests.
+    blockchain_test.TestNSChain.blockchain = bc
+    blockchain_test.start_blockchain_tests()
 
 
 if __name__ == '__main__':
@@ -72,6 +86,8 @@ if __name__ == '__main__':
     createchain= subparser.add_parser('createblockchain')
     printchain = subparser.add_parser('printchain')
     transact   = subparser.add_parser('send')
+    createwallet = subparser.add_parser('createwallet', help='Creates a new wallet')
+    list_wallet_addr = subparser.add_parser('list_wallet_addr', help='List all wallet addresses')
     verifychain = subparser.add_parser('test')
 
     getbalance.add_argument('--address',type=str,required= True, help='get balance for the address')
@@ -79,7 +95,6 @@ if __name__ == '__main__':
     transact.add_argument('--comingfrom',type=str,required= True, help='source wallet address')
     transact.add_argument('--to',type=str,required= True, help='destination wallet address')
     transact.add_argument('--amount',type=int,required= True, help='amount to be sent')
-
 
     if len(sys.argv) < 2:
       parser.print_help()
@@ -101,6 +116,12 @@ if __name__ == '__main__':
 
     elif args.command == 'send':
       send(args)
+
+    elif args.command == 'createwallet':
+      create_wallet()
+
+    elif args.command  == 'list_wallet_addr':
+      list_wallet_addresses()
 
     elif args.command == 'test': # verify the blockchain created is fine by performing unit tests 
       test_chain()
