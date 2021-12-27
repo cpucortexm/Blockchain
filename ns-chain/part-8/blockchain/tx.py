@@ -2,6 +2,7 @@ from transaction import TxIn, TxOut, Tx
 import blockchain as blockchain
 from pylogger import pylog
 from wallet import Wallet
+import wallets
 import utils
 
 logger = pylog.get_custom_logger(__name__)
@@ -10,8 +11,9 @@ logger = pylog.get_custom_logger(__name__)
 def CoinbaseTx(data, to):
     if not data:    # if data is empty string (i.e. data = "")
         data = 'Coins to {}'.format(to)
-
-    txin  = TxIn([], -1, None, data) # start with empty hash and -1 for coinbaseTx
+    # data must be the hex-string of the given string
+    # first convert to bytes and then take hex to get ascii representation of string 
+    txin  = TxIn([], -1, None, bytes(data, 'utf-8').hex()) # start with empty hash and -1 for coinbaseTx
     txout = new_TxOutput(100, to)
     tx    = Tx(None, [txin], [txout])
 
@@ -24,16 +26,16 @@ def New_Transaction(bc, tx_from, tx_to, amount):
     outputs = []  # list of type class TxOut
 
     ws = wallets.Wallets()
-    w = ws.get_wallet(tx_from)
-    pubKeyHash = Wallet.public_key_Hash(w.public_key)
+    wk = ws.get_wallet(tx_from)  # wk[0] = private key and wk[1] = public key
+    pubKeyHash = Wallet.public_key_Hash(wk[1]) # wk[1] is wallet_keys[1] = is public_key
 
     acc, validOutputs = blockchain.Chain.find_SpendableOutputs(pubKeyHash, amount)
     if acc < amount:
-        logger.error("Error: not enough funds")
+        raise Exception("Error: not enough funds")
 
     for txID, outs in validOutputs.items():  # iterate through dict (key = string(ID), value = list(array) of int's)
         for out in outs:    # loop through the values (list(array) of int's)
-            tx_input =  TxIn(txID, out, None, w.public_key)
+            tx_input =  TxIn(txID, out, None, wk[1])
             inputs.append(tx_input)
 
     outputs.append(new_TxOutput(amount, tx_to))
@@ -41,8 +43,8 @@ def New_Transaction(bc, tx_from, tx_to, amount):
         outputs.append(new_TxOutput(acc-amount, tx_from))
 
     tx = Tx(None,inputs,outputs)
-    tx.tx_hash()
-    bc.sign_transaction(tx, w.private_key)
+    tx.ID = tx.tx_hash()
+    bc.sign_transaction(tx, wk[0]) # wk[0] is private key
     return tx
 
 
@@ -55,7 +57,7 @@ def sign_Tx(tx, privkey, prevTxs):   # prevTxs is a map of key = ID(hash),value 
     # We must sign only if the prev transactions had a valid ID.
     for inTx in tx.TxIn:
         if prevTxs[inTx.ID].ID == None:  # prevTxs[inTx.ID] will be a Tx as key is ID(hex-string)
-            logger.panic("Error: Previous transaction does not exist")
+            raise Exception("Error: Previous transaction does not exist")
 
     txCopy = trimmed_tx_copy(tx)
     # Now we go through every Tx input of the TxCopy
@@ -70,8 +72,9 @@ def sign_Tx(tx, privkey, prevTxs):   # prevTxs is a map of key = ID(hash),value 
         # We sign the hash ID as it represents 
         # the whole Tx message, like sig = sk.sign(b"message")
         # sign message must be in bytes
-        signature = privkey.sign(bytes(txCopy.ID, 'utf-8'))
-        tx.TxIn[idx].Signature = signature
+        sk = Wallet.get_signing_key(privkey)
+        signature = sk.sign(bytes.fromhex(txCopy.ID))
+        tx.TxIn[idx].Signature = signature.hex()
 
 # Return a bool if all the transactions are verified
 def verify_Tx(tx, prevTxs):
@@ -81,7 +84,7 @@ def verify_Tx(tx, prevTxs):
     # We can verify only if the prev transactions had a valid ID.
     for inTx in tx.TxIn:
         if prevTxs[inTx.ID].ID == None:  # prevTxs[inTx.ID] will be a Tx as key is ID(hex-string)
-            logger.panic("Error: Previous transaction does not exist")
+            raise Exception("Error: Previous transaction does not exist")
 
     txCopy = trimmed_tx_copy(tx)
 
@@ -99,18 +102,19 @@ def verify_Tx(tx, prevTxs):
         # VerifyingKey.from_public_key_recovery(signature,message, SECP256k1), where
         # signature is the actual tx.TxIn signature
         # message will be the txCopy.ID as we had signed this ID, see above
-        # message must be in bytes
-        vklist = VerifyingKey.from_public_key_recovery(tx.TxIn[idx].Signature, 
-                                                       bytes(txCopy.ID, 'utf-8'),
-                                                       SECP256k1)
-
+        # message and signature must be in bytes
+        vklist = Wallet.get_verifying_key_list(  bytes.fromhex(tx.TxIn[idx].Signature), 
+                                                 bytes.fromhex(txCopy.ID),
+                                              )
         # vk0 and vk1 will be two public keys from the above list
         vk0 = vklist[0]   # x,y on ecc
         vk1 = vklist[1]   # x,-y on ecc
 
         # lets use the first one to verify the signature
-        result = vk0.verify(tx.TxIn[idx].Signature,
-                            bytes(txCopy.ID, 'utf-8'))
+        result = Wallet.verify_signature(  vk0,
+                                           bytes.fromhex(tx.TxIn[idx].Signature),
+                                           bytes.fromhex(txCopy.ID)
+                                        )
         if result == False:
             return False
 
@@ -153,9 +157,13 @@ def uses_key(txin, pubKeyHash):
 def lock(txout, address):
     if type(txout) is not TxOut:
         raise Exception("Output must be of TxOut type")
-    pubkeyHash =  utils.base58_decode(address)   # will be a hex-string
-    pubkeyHash = pubkeyHash[1:len(pubkeyHash) - 1] # remove Version Info and checksum
+    pubkeyHash =  utils.base58_decode(address)   # will be in bytes
+    pubkeyHash      = pubkeyHash.hex()
+    pubkeyHash      = pubkeyHash[2 : len(pubkeyHash)-8]    
     txout.PublicKeyHash = pubkeyHash
+    #Note: Another way to achieve the same as above
+    #pubkeyHash = pubkeyHash[1:len(pubkeyHash) - 4] # remove Version Info and checksum
+    #txout.PublicKeyHash = pubkeyHash.hex()   # convert to hex-string
 
 def is_locked_with_key(txout, pubKeyHash):
     return txout.PublicKeyHash == pubKeyHash    # return true or false

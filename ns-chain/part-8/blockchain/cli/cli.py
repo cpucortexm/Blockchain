@@ -57,14 +57,14 @@ def get_balance(args):
     logger.info("Balance of %s:%d", args.address, balance)
 
 def send(args):
-    if not Wallet.validate_address(args.comingfrom):
+    if not Wallet.validate_address(args.fromaddr):
         raise Exception("From Address not valid!")
 
-    if not Wallet.validate_address(args.to):
+    if not Wallet.validate_address(args.toaddr):
         raise Exception("To Address not valid!")
 
-    chain = bc.continue_blockchain(args.comingfrom) # to check if blockchain exists
-    transaction = tx.New_Transaction(bc, args.comingfrom, args.to, args.amount)
+    chain = bc.continue_blockchain(args.fromaddr) # to check if blockchain exists
+    transaction = tx.New_Transaction(bc, args.fromaddr, args.toaddr, args.amount)
     bc.add_block(transaction)
     logger.info("Success!")
 
@@ -107,8 +107,8 @@ if __name__ == '__main__':
 
     getbalance.add_argument('--address',type=str,required= True, help='get balance for the address')
     createchain.add_argument('--address',type=str,required= True, help='create blockchain for the address')
-    transact.add_argument('--comingfrom',type=str,required= True, help='source wallet address')
-    transact.add_argument('--to',type=str,required= True, help='destination wallet address')
+    transact.add_argument('--fromaddr',type=str,required= True, help='source wallet address')
+    transact.add_argument('--toaddr',type=str,required= True, help='destination wallet address')
     transact.add_argument('--amount',type=int,required= True, help='amount to be sent')
 
     if len(sys.argv) < 2:

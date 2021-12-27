@@ -45,7 +45,8 @@ class Chain:
 
     @classmethod
     def create_db_object(cls):
-        cls.db = Db()  # create or get database (creates if not existing)
+        if cls.db is None:
+            cls.db = Db()  # create or get database (creates if not existing)
         return cls.db
 
     def init_blockchain(self, address):
@@ -106,19 +107,18 @@ class Chain:
             self.logger.info("prevHash:%s",block['prevHash'])
             self.logger.info("block Transactions:")
             for tx in block['Tx']:
-                self.logger.info("Hash: %s",tx.ID)
-                self.logger.info("----------------")
-                self.logger.info("Transaction In's:")
-                for txin in tx.TxIn:
-                   self.logger.info(txin.ID)
-                   self.logger.info(txin.Out)
-                   self.logger.info(txin.Signature)
-                self.logger.info("----------------")
-                self.logger.info("Transaction Out's:")
-                for txout in tx.TxOut:
-                   self.logger.info(txout.value)
-                   self.logger.info(txout.PublicKey)
+                self.logger.info("---Transaction---:%s", tx.ID)
+                for i, txin in enumerate(tx.TxIn):
+                    self.logger.info("  Input:    %d", i)
+                    self.logger.info("    TXID:     %s",txin.ID)
+                    self.logger.info("    Out:     %d",txin.Out)
+                    self.logger.info("    Signature:    %s",txin.Signature)
+                    self.logger.info("    Pubkey:    %s",txin.PubKey)
 
+                for i, txout in enumerate(tx.TxOut):
+                    self.logger.info("  Output:    %d", i)
+                    self.logger.info("    Value:    %d", txout.value)
+                    self.logger.info("    Script:    %s", txout.PublicKeyHash)
             self.logger.info("------------------------------------------------------------------------------")
 
     # UTXO : Unspent transaction Outputs helps solve double spend
@@ -178,9 +178,9 @@ class Chain:
                     if continue_outer_loop is True:   # continue back to outer for loop (outIdx, outTx)
                         continue
 
-                    if transaction.is_locked_with_key(outTx, ):
+                    if transaction.is_locked_with_key(outTx,pubkeyhash):
                         unspentTxs.append(tx)
-                if(transaction.IsCoinbase(tx) == False):
+                if(transaction.is_Coinbase(tx) == False):
                     # Loop through the list of all the tx inputs(TxIn) of the current tx
                     outvalues = []
                     for inIdx, inTx in enumerate(tx.TxIn):

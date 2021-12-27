@@ -14,7 +14,7 @@ CHECKSUM_LENGTH = 8   # means 4 bytes i.e. 4*2 (not 4 characters)
 # creates a single byte starting with 00, this is responsible to generate
 # bitcoin wallet address starting with '1'
 VERSION  = '00'   
-
+# Data format: VERSION:PUBKEYHASH:CHECKSUM
 
 # As a general note:
 # We generate private key of type class 'ecdsa.keys.SigningKey
@@ -34,7 +34,7 @@ class Wallet:
     # For signing it must be in original form - <class 'ecdsa.keys.SigningKey'> 
     @staticmethod
     def get_signing_key(privkey):
-        sk = SigningKey.from_string(bytes.fromhex(privkey, curve=SECP256k1))
+        sk = SigningKey.from_string(bytes.fromhex(privkey), curve=SECP256k1)
         return sk
 
     # The public key is in hex-string
@@ -43,6 +43,15 @@ class Wallet:
     def get_verifying_key(pubkey):
         vk = VerifyingKey.from_string(bytes.fromhex(pubkey, curve=SECP256k1))
         return vk
+
+    @staticmethod
+    def get_verifying_key_list(signature, message, hashfunc=SECP256k1):
+        return VerifyingKey.from_public_key_recovery(signature, 
+                                                     message,
+                                                     hashfunc)
+    @staticmethod
+    def verify_signature(vk, signature, message):
+        return vk.verify(signature, message)
 
     # Takes public key and calculates hash for this key
     # return hex-string using RIPEMD160 to calculate hash.

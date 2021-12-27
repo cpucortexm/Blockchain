@@ -23,6 +23,7 @@ import hashlib
 from pylogger import pylog
 import jsonpickle
 
+logger = pylog.get_custom_logger(__name__)
 # Class representing transaction outputs
 class TxOut:
     def __init__(self, _value, _pubkey = []):
@@ -43,7 +44,7 @@ class TxOut:
 class TxIn:
         # The inputs specify which transaction outputs to spend.
         # Please read UTXO in blockchain file.
-    def __init__(self, id, out, sig = []):
+    def __init__(self, id, out, sig = [], pubKey = []):
         # e.g. if the transaction(say x) has 30 outputs, and we want to reference 
         # only one of them,then the transaction x is represented by ID, and the output with index = Out
         self.ID = id     # list of bytes (hash value of type string), represents a transaction hash
@@ -55,7 +56,7 @@ class TxIn:
         # In our case as we will just use the PublicKey of the output (i.e.the user's address) as
         # our signature.
         self.Signature = sig   # bytes (same as PublicKey of output = users address)
-        self.PubKey = []   # bytes (public key but not hashed)
+        self.PubKey = pubKey  # bytes (public key but not hashed)
 
     def __str__(self):
         return str(self.__dict__)
@@ -67,7 +68,6 @@ class Tx:
         self.ID = id    # list of bytes (hash value of type string), represents a transaction hash of current transaction.
         self.TxIn = txins  # list of TxIn
         self.TxOut = txouts # list of TxOut
-        self.logger = pylog.get_custom_logger(__name__)
 
     def __str__(self):
         return str(self.__dict__)
@@ -89,15 +89,15 @@ class Tx:
         return hash
 
     def print_Tx(self):
-        self.logger.info("---Transaction---:%s", self.ID)
+        logger.info("---Transaction---:%s", self.ID)
         for i, txin in enumerate(self.TxIn):
-            self.logger.info("    Input:    %d", i)
-            self.logger.info("    TXID:     %s",txin.ID)
-            self.logger.info("    Out:     %d",txin.Out)
-            self.logger.info("    Signature:    %s",txin.Signature)
-            self.logger.info("    Pubkey:    %s",txin.PubKey)
+            logger.info("    Input:    %d", i)
+            logger.info("    TXID:     %s",txin.ID)
+            logger.info("    Out:     %d",txin.Out)
+            logger.info("    Signature:    %s",txin.Signature)
+            logger.info("    Pubkey:    %s",txin.PubKey)
 
         for i, txout in enumerate(self.TxOut):
-            self.logger.info("    Output:    %d", i)
-            self.logger.info("    Value:    %d", txout.value)
-            self.logger.info("    Script:    %d", txout.PublicKeyHash)
+            logger.info("    Output:    %d", i)
+            logger.info("    Value:    %d", txout.value)
+            logger.info("    Script:    %s", txout.PublicKeyHash)
