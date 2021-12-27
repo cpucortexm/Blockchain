@@ -22,10 +22,12 @@ from pylogger import pylog
 from block import Block as nsblock
 from mine import Mine
 from db import Db
+from transaction import Tx
 import tx as transaction
 import sys
 from pathlib import Path
 import os.path
+
 
 class Chain:
     db = None  #Class Variables are variables that are shared by all instances of a class
@@ -107,18 +109,7 @@ class Chain:
             self.logger.info("prevHash:%s",block['prevHash'])
             self.logger.info("block Transactions:")
             for tx in block['Tx']:
-                self.logger.info("---Transaction---:%s", tx.ID)
-                for i, txin in enumerate(tx.TxIn):
-                    self.logger.info("  Input:    %d", i)
-                    self.logger.info("    TXID:     %s",txin.ID)
-                    self.logger.info("    Out:     %d",txin.Out)
-                    self.logger.info("    Signature:    %s",txin.Signature)
-                    self.logger.info("    Pubkey:    %s",txin.PubKey)
-
-                for i, txout in enumerate(tx.TxOut):
-                    self.logger.info("  Output:    %d", i)
-                    self.logger.info("    Value:    %d", txout.value)
-                    self.logger.info("    Script:    %s", txout.PublicKeyHash)
+                tx.print_Tx()
             self.logger.info("------------------------------------------------------------------------------")
 
     # UTXO : Unspent transaction Outputs helps solve double spend

@@ -22,8 +22,8 @@
 import hashlib
 from pylogger import pylog
 import jsonpickle
+logger = pylog.get_logger(__name__)
 
-logger = pylog.get_custom_logger(__name__)
 # Class representing transaction outputs
 class TxOut:
     def __init__(self, _value, _pubkey = []):
@@ -91,13 +91,13 @@ class Tx:
     def print_Tx(self):
         logger.info("---Transaction---:%s", self.ID)
         for i, txin in enumerate(self.TxIn):
-            logger.info("    Input:    %d", i)
+            logger.info(" Input:    %d", i)
             logger.info("    TXID:     %s",txin.ID)
             logger.info("    Out:     %d",txin.Out)
             logger.info("    Signature:    %s",txin.Signature)
             logger.info("    Pubkey:    %s",txin.PubKey)
 
         for i, txout in enumerate(self.TxOut):
-            logger.info("    Output:    %d", i)
+            logger.info(" Output:    %d", i)
             logger.info("    Value:    %d", txout.value)
             logger.info("    Script:    %s", txout.PublicKeyHash)
