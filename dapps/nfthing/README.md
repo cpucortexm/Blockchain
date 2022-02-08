@@ -28,7 +28,7 @@ $ npx hardhat run scripts/deploy.js --network hardhat
 ## on testnet (rinkeby).If the network is busy, you may have to try a few times
 ```
 $ npx hardhat deploy --network rinkeby     # Note down the deployed address
-$ npx hardhat verify --constructor-args scripts/arguments.js < DEPLOYED ADDR > --network rinkeby  # if the network is busy, you may have to try multiple times
+$ npx hardhat verify --constructor-args scripts/arguments.js < DEPLOYED ADDR > --network rinkeby
 
 ```
 
