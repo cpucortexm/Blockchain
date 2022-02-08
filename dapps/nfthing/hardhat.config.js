@@ -31,9 +31,9 @@ task("deploy", "Deploy NFThing", async(taskArgs, hre) => {
 
   const Nfthing = await hre.ethers.getContractFactory("NFThing");
 
-  // Follow the below example with name,symbol and ipfs link
-  // const nft = await Nfthing.deploy("NFThing", "NT", "ipfs://QmXfkPA62p1d6dcibtUMP43JkrT8ttptKFMVK4wAPP928E/");
 
+  // const nft = await Nfthing.deploy("NFThing", "NT", "ipfs://QmXfkPA62p1d6dcibtUMP43JkrT8ttptKFMVK4wAPP928E/");
+  // Follow the example as above line and fill the empty "" with appropriate values
   const nft = await Nfthing.deploy("", "", "");
   await nft.deployed();
   console.log("deployed at:", nft.address);

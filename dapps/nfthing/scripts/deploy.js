@@ -16,8 +16,8 @@ async function main() {
   // We get the contract to deploy
   const Nfthing = await hre.ethers.getContractFactory("NFThing");
 
-  // Follow this example as below
   // const nft = await Nfthing.deploy("NFThing", "NF", "ipfs://QmXfkPA62p1d6dcibtUMP43JkrT8ttptKFMVK4wAPP928E/");
+  // Follow the example as above line and fill the empty "" with appropriate values
   const nft = await Nfthing.deploy("", "", "");
 
   await nft.deployed();
