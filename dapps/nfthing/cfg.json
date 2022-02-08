@@ -1,0 +1,14 @@
+{
+    "ropstenNodeEndpoint": "",
+    "forkmainnetNodeEndpoint":"",
+    "rinkebyNodeEndPoint":"",
+
+    "PrivateKey1": "",
+    "PrivateKey2": "",
+    "PrivateKey3": "",
+
+    "mainnetEtherscanApi":"",
+    "rinkebyEtherscanApi":"",
+    "ropstenEtherscanApi":""
+
+}
