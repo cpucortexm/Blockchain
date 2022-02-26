@@ -9,6 +9,13 @@
 
     "mainnetEtherscanApi":"",
     "rinkebyEtherscanApi":"",
-    "ropstenEtherscanApi":""
+    "ropstenEtherscanApi":"",
 
+    "name"    : "",
+    "symbol"  : "",
+    "baseuri" : "",
+    "maxMintAmountPerTx" : 20,
+    "max_supply": 100,
+    "presaleCost": 0.001,
+    "cost":        0.002
 }
