@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------
  @Filename:         test_local_mainnet.js
- @Copyright Author: Nfthing.co
+ @Copyright Author: Yogesh K
  @Date:             20/02/2022
  @Description:     Test the NfThing smart contract along with ERC721
                    on Ethereum mainnet fork.
@@ -55,11 +55,12 @@ describe("NFT testsuite 1 start:", function () {
       provider           = ethers.provider;
 
       [owner ,addr1, addr2, ...addrs] = await ethers.getSigners();
-
+    
       // To deploy our contract, we just have to call nft.deploy() and await
       // for it to be deployed(), which happens once its transaction has been
       // mined.
-      token = await nft.deploy(name, symbol, baseuri);
+      // During NFT tests, we dont need payment splitter address (using default 0x0)
+      token = await nft.deploy(name, symbol, baseuri, '0x0000000000000000000000000000000000000000');
       // The contract is NOT deployed yet; we must wait until it is mined
       await token.deployed()
   });

@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------
  @Filename:         test_local_mainnet.js
- @Copyright Author: Nfthing.co
+ @Copyright Author: Yogesh K
  @Date:             20/02/2022
  @Description:     Test the NfThing smart contract along with ERC721
                    on Ethereum mainnet fork.
@@ -48,10 +48,11 @@ describe("NFT testsuite 2 start:", function () {
       name               = configParams.name;
       symbol             = configParams.symbol;
       baseuri            = configParams.baseuri;
-      maxMintAmountPerTx = configParams.maxMintAmountPerTx;
-      max_supply         = configParams.max_supply;
-      presaleCost        = configParams.presaleCost;
-      cost               = configParams.cost;
+      // assign the same values as used in the contract initialization
+      maxMintAmountPerTx = 20;
+      max_supply         = 100;
+      presaleCost        = 0.001;
+      cost               = 0.002;
       provider           = ethers.provider;
 
       [owner ,addr1, addr2, ...addrs] = await ethers.getSigners();

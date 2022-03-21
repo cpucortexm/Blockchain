@@ -4,6 +4,7 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 const hre = require("hardhat");
+const configParams = require("../cfg.json");
 
 async function main() {
   // Hardhat always runs the compile task when running scripts with its command
@@ -14,15 +15,17 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const Nfthing = await hre.ethers.getContractFactory("NFThing");
+  const Nfthing = await hre.ethers.getContractFactory("NFTV1");
 
-  // const nft = await Nfthing.deploy("NFThing", "NF", "ipfs://QmXfkPA62p1d6dcibtUMP43JkrT8ttptKFMVK4wAPP928E/");
-  // Follow the example as above line and fill the empty "" with appropriate values
-  const nft = await Nfthing.deploy("", "", "");
+  const name   = configParams.name;
+  const symbol = configParams.symbol;
+  const baseuri= configParams.baseuri;
+  const nft = await Nfthing.deploy(name, symbol, baseuri);
+
 
   await nft.deployed();
 
-  console.log("NFThing deployed to:", nft.address);
+  console.log("NFTV1 deployed to:", nft.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

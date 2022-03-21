@@ -1,6 +1,6 @@
 //SPDX-License-Identifier: MIT
 /// @title NFT minting for artists
-/// @author NFThing.co
+/// @author Yogesh K
 /// @notice Use this contract for minting of art. It is gas optimized
 /// @dev All function calls are currently implemented without side effects
 
@@ -9,13 +9,15 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/common/ERC2981.sol";
 
-contract NFThing is ERC721, Ownable {
+contract NFThing is ERC721, Ownable, ERC2981 {
     // =============================================================================
     //              Contract variables start here
     // =============================================================================
     using Strings for uint256; // uint256 variable can call up functions in the Strings library.e.g. value.toString()
     using Counters for Counters.Counter;
+    event royaltyPaid(bool os); // event emitted after successful royalty pay
 
     Counters.Counter private _supply;
 
@@ -30,13 +32,19 @@ contract NFThing is ERC721, Ownable {
     mapping(address => bool) public whitelisted; // if you are whitelisted, you dont have to pay gas for minting
     mapping(address => bool) public presaleWallets; // for presale use presale cost for minting
 
+    // For payment splitter and royalty
+    address payable public payments; // payment splitter address for mint amount
+    mapping(address => bool) public royaltyWhitelist; // if you are whitelisted, you dont have to pay royalty(Artist)
+
     constructor(
         string memory _name,
         string memory _symbol,
-        string memory _initBaseURI
+        string memory _initBaseURI,
+        address payable _payments
     ) ERC721(_name, _symbol) {
         setUriPrefix(_initBaseURI);
-        mint(20);
+        mint(maxMintAmountPerTx);
+        payments = _payments; // address of the payment splitter created
     }
 
     // =============================================================================
@@ -245,12 +253,136 @@ contract NFThing is ERC721, Ownable {
         presaleWallets[_user] = false;
     }
 
+    /// @notice function to update payment splitter address. Need to be owner
+    /// @param _payment new payment splitter address to be used.
+
+    function updatePaymentSplitterAddress(address payable _payment)
+        public
+        onlyOwner
+    {
+        payments = _payment;
+    }
+
+    /// @notice function to add address to royalty white list. Need to be owner.
+    /// @param _user user address to add to the royalty whitelist.
+
+    function royaltyWhitelistUser(address _user) public onlyOwner {
+        royaltyWhitelist[_user] = true;
+    }
+
+    /// @notice function to remove address from royalty white list. Need to be owner.
+    /// @param _user user address to remove from royalty whitelist.
+
+    function removeRoyaltyWhitelistUser(address _user) public onlyOwner {
+        royaltyWhitelist[_user] = false;
+    }
+
     /// @notice  This will transfer the contract balance to the owner.Need to be owner.
     ///          Do not remove this otherwise you will not be able to withdraw the funds.
 
     function withdraw() public onlyOwner {
-        (bool os, ) = payable(owner()).call{value: address(this).balance}("");
+        (bool os, ) = payable(payments).call{value: address(this).balance}("");
         require(os, "Failed to withdraw amount!");
+    }
+
+    // ########################################################################
+    // Royalty stuff
+    // ########################################################################
+
+    /// @notice Needed to resolve clash between ERC2981 and ERC721 as
+    /// both implement this function and we override them
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC2981, ERC721)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+
+    /// @notice Allows to set the royalties per token. An artist must call this.
+    /// @param recipient the royalties recipient. Recipient can be
+    /// payment splitter address if you need to split the royalty amount or an
+    /// artists address
+    /// @param fraction royalty percentage in BPS (5% will be 500, 2.5% will be 250...
+    ///  100% will be 10000)
+    /// @dev Sets the royalty information for a specific token id, overriding the global default
+    function setTokenRoyalty(
+        uint256 tokenId,
+        address recipient,
+        uint96 fraction
+    ) public onlyOwner {
+        _setTokenRoyalty(tokenId, recipient, fraction);
+    }
+
+    /// @notice Same royalty for every token i.e. per contract.
+    /// @param recipient the royalties recipient. Recipient can be
+    /// payment splitter address if you need to split the royalty amount or
+    /// artists address
+    /// @param fraction royalty percentage in BPS (5% will be 500, 2.5% will be 250...
+    ///  100% will be 10000)
+    function setDefaultRoyalty(address recipient, uint96 fraction)
+        public
+        onlyOwner
+    {
+        _setDefaultRoyalty(recipient, fraction);
+    }
+
+    /// @notice To Delete default royalty
+    function deleteDefaultRoyalty() public onlyOwner {
+        _deleteDefaultRoyalty();
+    }
+
+    /// @notice This function need to be discussed in future on how the royalty fees can
+    /// be paid when calling safeTransferFrom().
+    /// As of now platforms like Rarible, OpenSea etc implement the royalty payment outside
+    /// the safeTransferFrom() function (check doc for more details) using UI/UX,
+    /// where after the token transfer they initiate royalty payment using multiple
+    /// protocols implemented as smart contracts (see rarible).
+    /// A much complex smart contract royalty protocol may be needed in future.
+    /// As of now this is implemented to test the royalty transfer functionality.
+    /// Recipient can be a Payment splitter address or an Artists address
+
+    function payRoyaltyFees(
+        address from,
+        uint256 tokenId,
+        uint256 salePrice
+    ) public payable {
+        uint256 royaltyamount;
+        address recipient;
+        (recipient, royaltyamount) = this.royaltyInfo(tokenId, salePrice);
+        require(from == msg.sender, "Must be the token seller account");
+        require(msg.value >= royaltyamount, "Not sufficient Royalty funds");
+        require(
+            royaltyWhitelist[msg.sender] == false,
+            "Whitelisted, no royalty needed"
+        );
+
+        if (msg.value > royaltyamount) {
+            uint256 temp = msg.value - royaltyamount;
+            royaltyamount = msg.value - temp;
+        } else {
+            royaltyamount = msg.value;
+        }
+        (bool os, ) = payable(recipient).call{value: royaltyamount}("");
+        require(os, "Failed to withdraw royalty funds!");
+        emit royaltyPaid(os);
+    }
+
+    /// @notice get the royalty fee associated with the token after transfer
+    /// @param tokenId tokenID of the token to know the royalty amount
+    /// @param salePrice price you want to sell it for (must be in Wei the lowest possible unit)
+
+    function getRoyaltyFees(uint256 tokenId, uint256 salePrice)
+        public
+        view
+        returns (address, uint256)
+    {
+        address addr;
+        uint256 amount;
+        (addr, amount) = this.royaltyInfo(tokenId, salePrice);
+        return (addr, amount);
     }
 
     // =============================================================================

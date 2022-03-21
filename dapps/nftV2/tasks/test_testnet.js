@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------
  @Filename:         test_testnet.js
- @Copyright Author: Nfthing.co
+ @Copyright Author: Yogesh K
  @Date:             20/02/2022
  @Description : Run tasks/subtasks for test net (ropsten, rinkeby etc)
 -------------------------------------------------------------*/
@@ -67,8 +67,8 @@ const deployed_addr_file =  tasksDir + "/contract-address.json"; //file name
   .setAction(async (taskArgs) => {
       console.log("\nTestcase3: Deploying the contract");
       const Nfthing = await hre.ethers.getContractFactory("NFThing");
-      // Follow the below example with name,symbol and ipfs link
-      const nft = await Nfthing.deploy(cfg.name, cfg.symbol, cfg.baseuri);
+      // We deploy with 0 address for payment splitter during tests
+      const nft = await Nfthing.deploy(cfg.name, cfg.symbol, cfg.baseuri,'0x0000000000000000000000000000000000000000');
       await nft.deployed();
       console.log("deployed at:", nft.address);
       fs.writeFileSync(

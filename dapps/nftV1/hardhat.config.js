@@ -1,6 +1,7 @@
 require("@nomiclabs/hardhat-waffle");
 require("@nomiclabs/hardhat-etherscan");
 require("./tasks/test_testnet");
+require("./scripts/verify");
 
 // Alchemy network endpoints
 const ROPSTEN_NODE_ENDPOINT = require("./cfg.json").ropstenNodeEndpoint;
