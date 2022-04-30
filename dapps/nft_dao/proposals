@@ -1,0 +1,17 @@
+1. Should the DAO mint additional 50 NFTs into the treasury
+2. Increasing the maxMintAmountPerTx to 10, thus allowing more
+   minting possible for a given Tx.
+3. Changing our DAO name to XYZ
+4. Using 1/10th of the DAO funds for XYZ-charity for poor/homeless
+
+2. At any point a person with over 10,000 votes can make
+a proposal for the future direction of our platform. A proposal
+can be anything, either a proposal to change our logo, to 
+changing our name, to adding a new feature, to adding an
+artist to the community approved artists, or adjusting our 
+fees on our smart contracts. Proposals can be used to enact 
+different features on the smart contract, if the community 
+wants them, such as the ability to convert their NFTs into ETH,
+or to upgrade the DAO into a new smart contract. These are all 
+just examples and will be dictated by whoever is making a 
+proposal and then of course, if it’s passed.
