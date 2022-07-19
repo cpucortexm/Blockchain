@@ -116,3 +116,14 @@ print(less_than_zero)
 from functools import reduce
 product = reduce((lambda x, y: x * y), [1, 2, 3, 4])
 print(product)
+
+
+
+# 12. Get all substrings from a given string 
+# e.g. s = 'cdcd', then substrings are
+# c, cd, cdc, cdcd, d, dc, dcd, c, cd, d
+# we use double for loop and with s[i:j]
+s = "cdcd"
+sub = [s[i:j] for i in range(len(s))
+              for j in range(i+1, len(s)+ 1)]
+              
