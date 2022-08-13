@@ -37,15 +37,15 @@ contract CheckSwap {
             path[0] = _tokenIn;
             path[1] = _tokenOut;
         } else {
+            /*
             path = new address[](2);
             path[0] = _tokenIn;
             path[1] = _tokenOut;
-            /*
+        */
             path = new address[](3);
             path[0] = _tokenIn;
             path[1] = Weth;
             path[2] = _tokenOut;
-*/
         }
 
         IUniswapV2Router02(Uniswap_V2_Router).swapExactTokensForTokens(
