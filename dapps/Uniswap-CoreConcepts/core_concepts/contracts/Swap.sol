@@ -5,7 +5,7 @@ import "@uniswap/v2-periphery/contracts/interfaces/IERC20.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IWETH.sol";
 
-contract CheckSwap {
+contract VerifySwap {
     address constant Uniswap_V2_Router =
         0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
     address immutable Weth;

@@ -1,10 +1,10 @@
 const BN = require("bn.js");
 const IERC20 = artifacts.require("IERC20");
-const checkSwap = artifacts.require("CheckSwap");
+const verifySwap = artifacts.require("VerifySwap");
 const { DAI, WETH, ANT, GTC, AAVE, TETHER,DAI_WHALE } = require("./config");
 
 
-contract("checkSwap", (accounts) =>{
+contract("verifySwap", (accounts) =>{
   const AMOUNT_IN = new BN(10).pow(new BN(18)).mul(new BN(1000)); // 1000 DAI
   const AMOUNT_OUT_MIN = 1;
   const TOKEN_IN = DAI;
@@ -19,7 +19,7 @@ contract("checkSwap", (accounts) =>{
   beforeEach(async () => {
     tokenIn = await IERC20.at(TOKEN_IN); // create in token instance
     tokenOut = await IERC20.at(TOKEN_OUT); // create out token instance
-    SwapInstance = await checkSwap.new(); // create Swap token instance
+    SwapInstance = await verifySwap.new(); // create Swap contract instance
     await tokenIn.approve(SwapInstance.address, AMOUNT_IN, { from: WHALE });
   });
 

@@ -6,6 +6,7 @@ const GTC = "0xDe30da39c46104798bB5aA3fe8B9e0e1F348163F"
 const TETHER = "0xdAC17F958D2ee523a2206206994597C13D831ec7"
 
 const DAI_WHALE = process.env.DAI_WHALE
+const WETH_WHALE = process.env.WETH_WHALE
 
 module.exports = {
     DAI,
@@ -15,4 +16,5 @@ module.exports = {
     GTC,
     TETHER,
     DAI_WHALE,
+    WETH_WHALE,
 }
