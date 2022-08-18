@@ -38,7 +38,7 @@ contract VerifyLiquidity {
         uint256 _amountA,
         uint256 _amountB
     ) external {
-        // Tranasfer tokenA and tokenB to this contract
+        // Transfer tokenA and tokenB to this contract
         IERC20(_tokenA).transferFrom(msg.sender, address(this), _amountA);
         IERC20(_tokenB).transferFrom(msg.sender, address(this), _amountB);
 
