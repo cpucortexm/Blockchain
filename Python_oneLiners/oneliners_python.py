@@ -27,7 +27,7 @@ print(var)
 squares = [i**2 for i in range(10)]
 
 
-# 3: List comprehension for creating a list with if condition
+# 3a: List comprehension for creating a list with if condition
 ####################################################
 # Instead of
 # squares = []
@@ -36,6 +36,10 @@ squares = [i**2 for i in range(10)]
 #        squares.append(i**2)
 ####################################################
 even_squares = [i**2 for i in range(10) if i%2==0]
+
+# 3b: List comprehension for creating a list with if and else condition
+Yes_No_list = ['Yes' if i%2==0 else 'No' for i in range(10) ]
+print(Yes_No_list)
 
 
 # 4: List comprehension to change multiline to single line
@@ -126,4 +130,45 @@ print(product)
 s = "cdcd"
 sub = [s[i:j] for i in range(len(s))
               for j in range(i+1, len(s)+ 1)]
-              
+
+
+# 13. List reverse
+# reverse in place using reverse()
+# reverse using [::-1]
+
+a = [2,3,5,6]
+a.reverse()   # in place
+print(a)
+b = [4,5,6,7]
+print(b[::-1])  # gives new list
+
+# 14. ASCII values and char weights
+# a-z ascii values can be got using ord()
+
+print(ord('a'))
+print(ord('z'))
+
+print("weight of a:", ord('a') - 96)
+print("weight of z:", ord('z') - 96)
+
+# 15. List sort in place
+
+a = [5,3,7,6]
+a.sort()
+print(a)
+
+# 16. Convert a number to list
+# e.g.  '321' must be ['3','2','1']
+
+num = 321
+l = list(str(num))
+print(l)
+
+# 17. Create a string with no spaces or special char
+# e.g. s = 'A man, a plan, a canal: Panama'
+# Output: amanaplanacanalpanama
+s ='A man, a plan, a canal: Panama'
+l = [ch for ch in s if ch.isalnum()]
+print(l)
+l = [ch.lower() for ch in l]
+print(l)
