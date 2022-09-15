@@ -172,3 +172,9 @@ l = [ch for ch in s if ch.isalnum()]
 print(l)
 l = [ch.lower() for ch in l]
 print(l)
+
+
+# 18. Initialize dictionary with zeros for keys
+# e.g. keys = 0....5 and set to 0
+
+divisible = dict.fromkeys(range(5),0)
