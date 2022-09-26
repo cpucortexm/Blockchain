@@ -1,0 +1,22 @@
+const WETH_WHALE = "0x0298B2eCdef68BC139B098461217a5B3161B69C8";
+const WMATIC_WHALE = "0xFffbCD322cEace527C8ec6Da8de2461C6D9d4e6e";
+const USDC = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174";
+
+const aavePoolAddressesProvider =
+  "0xa97684ead0e402dC232d5A977953DF7ECBaB3CDb";
+
+const USDC_WHALE = process.env.USDC_WHALE;
+//const aaveTokens = {
+//  DAI: "0x8619d80FB0141ba7F184CbF22fd724116D9f7ffC",
+//  USDC: "0xFCCf3cAbbe80101232d343252614b6A3eE81C989",
+//  USDT: "0xfb00AC187a8Eb5AFAE4eACE434F493Eb62672df7",
+//};
+
+
+module.exports = {
+    USDC,
+    WETH_WHALE,
+    WMATIC_WHALE,
+    USDC_WHALE,
+    aavePoolAddressesProvider,
+}

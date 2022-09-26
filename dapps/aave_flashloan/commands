@@ -1,0 +1,16 @@
+
+Terminal 1: Fork Polygon mainnet using Alchemy
+
+.env file $WEB3_ALCHEMY_POLYGON_ID=ueOPvkGQDyl7AhG0UGHjAkZ3cjZYRxnF
+
+$ source .env
+npx ganache-cli i --fork https://polygon-mainnet.g.alchemy.com/v2/$WEB3_ALCHEMY_POLYGON_ID \
+--unlock $USDC_WHALE \
+--unlock $DAI_WHALE \
+--unlock $WETH_WHALE \
+--networkId 999
+
+
+Terminal 2: Run the test
+$ source .env
+env $(cat .env) npx truffle test --network polygon_main_fork test/test.js
