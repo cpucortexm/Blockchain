@@ -7,12 +7,14 @@ const tokens = (n) =>{
 }
 describe('TokenERC20', () =>{
 
-    let token
+    let token, accounts, deployer
 
     beforeEach(async ()=>{
         const Token =  await ethers.getContractFactory('TokenERC20');
         // get deployed instance of contract
         token = await Token.deploy('KN Token', 'KNT', 1000000)
+        accounts = await ethers.getSigners()
+        deployer = accounts[0]
     })
 
     describe('Deployment', ()=>{
@@ -32,6 +34,10 @@ describe('TokenERC20', () =>{
         it('has correct totalSupply',async ()=>{
             expect(await token.totalSupply()).to.equal(totalSupply);
         })
+        it('assigns total supply to deployer',async ()=>{
+            expect(await token.balanceOf(deployer.address)).to.equal(totalSupply);
+        })
+
     })
 
     // Describe Spending

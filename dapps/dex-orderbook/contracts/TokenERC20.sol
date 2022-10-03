@@ -7,6 +7,8 @@ contract TokenERC20 {
     string public symbol;
     uint256 public decimals = 18;
     uint256 public totalSupply;
+    // track balances
+    mapping(address => uint256) public balanceOf;
 
     constructor(
         string memory _name,
@@ -16,5 +18,6 @@ contract TokenERC20 {
         name = _name;
         symbol = _symbol;
         totalSupply = _totalSupply * (10**decimals); // 1000000 * 10^18;
+        balanceOf[msg.sender] = totalSupply;
     }
 }
