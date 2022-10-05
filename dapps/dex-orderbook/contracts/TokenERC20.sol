@@ -9,6 +9,7 @@ contract TokenERC20 {
     uint256 public totalSupply;
     // track balances
     mapping(address => uint256) public balanceOf;
+    event Transfer(address indexed from, address indexed to, uint256 value);
 
     constructor(
         string memory _name,
@@ -19,5 +20,19 @@ contract TokenERC20 {
         symbol = _symbol;
         totalSupply = _totalSupply * (10**decimals); // 1000000 * 10^18;
         balanceOf[msg.sender] = totalSupply;
+    }
+
+    function transfer(address _to, uint256 _value)
+        public
+        returns (bool success)
+    {
+        // sender must have enough tokens to spend
+        require(balanceOf[msg.sender] >= _value, "not enough tokens");
+        require(_to != address(0));
+        balanceOf[msg.sender] = balanceOf[msg.sender] - _value;
+        balanceOf[_to] += _value;
+
+        emit Transfer(msg.sender, _to, _value);
+        return true;
     }
 }
