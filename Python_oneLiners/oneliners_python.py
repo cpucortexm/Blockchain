@@ -178,3 +178,13 @@ print(l)
 # e.g. keys = 0....5 and set to 0
 
 divisible = dict.fromkeys(range(5),0)
+
+
+# 19. From collections Counter: use of dictionary
+
+from collections import Counter
+
+count = Counter([1,2,1,3,1,2])
+count
+count.values()  # displays all values
+
