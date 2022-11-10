@@ -7,7 +7,7 @@ const tokens = (n) =>{
 }
 describe('TokenERC20', () =>{
 
-    let token, accounts, deployer, receiver
+    let token, accounts, deployer, receiver, exchange
 
     beforeEach(async ()=>{
         const Token =  await ethers.getContractFactory('TokenERC20');
@@ -16,6 +16,7 @@ describe('TokenERC20', () =>{
         accounts = await ethers.getSigners()
         deployer = accounts[0]
         receiver = accounts[1]
+        exchange = accounts[2]
     })
 
     describe('Deployment', ()=>{
@@ -82,7 +83,79 @@ describe('TokenERC20', () =>{
     })
 
     // Describe Approving
+    describe('Approving Tokens', ()=>{
+        let amount, tx, result
+        beforeEach(async ()=>{
+            amount = tokens(100)
+            tx = await token.connect(deployer).approve(exchange.address,amount)
+            result = await tx.wait() // wait till tx is part of blockchain
+        })
+        describe('Success', ()=>{
+            it('allocate an allowance for token delegation', async () =>{
+                expect(await token.allowance(deployer.address, exchange.address)).to.equal(amount)
+            })
 
-    // 
+            it('emits an Approval event', async ()=>{
+                const event = result.events[0]
+                expect(event.event).to.equal('Approval')
+
+                const args = event.args
+                expect(args.owner).to.equal(deployer.address)
+                expect(args.spender).to.equal(exchange.address)
+                expect(args.value).to.equal(amount)
+            })
+        })
+
+        describe('Failure', ()=>{
+            it('rejects invalid spenders', async() =>{
+                await expect(token.connect(deployer).approve('0x0000000000000000000000000000000000000000',amount)).to.be.reverted
+            })
+        })
+
+    })
+
+    // Describe Delegated Sending token
+    describe('Delegated Token Transfer', ()=>{
+        let amount, tx, result
+        beforeEach(async ()=>{
+            amount = tokens(100)
+            // Give approval to exchange
+            tx = await token.connect(deployer).approve(exchange.address,amount)
+            result = await tx.wait() // wait till tx is part of blockchain
+        })
+        describe('Success', ()=>{
+            // After approval call transferFrom() to transfer tokens from
+            // deployer to receiver
+            beforeEach(async ()=>{
+                tx = await token.connect(exchange).transferFrom(deployer.address, receiver.address,amount)
+                result = await tx.wait() // wait till tx is part of blockchain
+            })
+
+            it('transfers token balances', async()=>{
+                expect(await token.balanceOf(deployer.address)).to.equal(tokens(999900))
+                expect(await token.balanceOf(receiver.address)).to.equal(amount)
+            })
+            it('resets the allowance', async()=>{
+                expect(await token.allowance(deployer.address, exchange.address)).to.equal(0)
+            })
+            it('emits a Transfer event', async ()=>{
+                const event = result.events[0]
+                expect(event.event).to.equal('Transfer')
+
+                const args = event.args
+                expect(args.from).to.equal(deployer.address)
+                expect(args.to).to.equal(receiver.address)
+                expect(args.value).to.equal(amount)
+            })
+
+        })
+        describe('Failure', ()=>{
+
+            it('attempt to transfer too many tokens', async() =>{
+                const invalidAmount = tokens(1000) // approval was only for 100
+                await expect(token.connect(exchange).transferFrom(deployer.address, receiver.address,invalidAmount)).to.be.reverted
+            })
+        })
+    })
 
 })

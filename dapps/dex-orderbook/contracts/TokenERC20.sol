@@ -9,7 +9,13 @@ contract TokenERC20 {
     uint256 public totalSupply;
     // track balances
     mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
     event Transfer(address indexed from, address indexed to, uint256 value);
+    event Approval(
+        address indexed owner,
+        address indexed spender,
+        uint256 value
+    );
 
     constructor(
         string memory _name,
@@ -28,11 +34,44 @@ contract TokenERC20 {
     {
         // sender must have enough tokens to spend
         require(balanceOf[msg.sender] >= _value, "not enough tokens");
-        require(_to != address(0));
-        balanceOf[msg.sender] = balanceOf[msg.sender] - _value;
-        balanceOf[_to] += _value;
+        _transfer(msg.sender, _to, _value);
+        return true;
+    }
 
-        emit Transfer(msg.sender, _to, _value);
+    function _transfer(
+        address _from,
+        address _to,
+        uint256 _value
+    ) internal {
+        require(_to != address(0));
+        balanceOf[_from] = balanceOf[_from] - _value;
+        balanceOf[_to] += _value;
+        emit Transfer(_from, _to, _value);
+    }
+
+    function approve(address _spender, uint256 _value)
+        public
+        returns (bool success)
+    {
+        require(_spender != address(0));
+        allowance[msg.sender][_spender] = _value;
+
+        emit Approval(msg.sender, _spender, _value);
+        return true;
+    }
+
+    function transferFrom(
+        address _from,
+        address _to,
+        uint256 _value
+    ) public returns (bool success) {
+        // check approval, msg.sender must have an approval prior to transfer
+        require(allowance[_from][msg.sender] >= _value);
+        require(balanceOf[_from] >= _value, "not enough tokens");
+        // spend tokens
+        _transfer(_from, _to, _value);
+        // Reset allowance
+        allowance[_from][msg.sender] -= _value;
         return true;
     }
 }
