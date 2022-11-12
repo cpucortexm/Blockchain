@@ -1,4 +1,9 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: GPL-3.0
+/*-----------------------------------------------------------
+ @Filename:         TokenERC20.sol
+ @Copyright Author: Yogesh K
+ @Date:             11/11/2022
+-------------------------------------------------------------*/
 pragma solidity ^0.8.12;
 import "hardhat/console.sol";
 
@@ -66,7 +71,7 @@ contract TokenERC20 {
         uint256 _value
     ) public returns (bool success) {
         // check approval, msg.sender must have an approval prior to transfer
-        require(allowance[_from][msg.sender] >= _value);
+        require(allowance[_from][msg.sender] >= _value, "not enough allowance");
         require(balanceOf[_from] >= _value, "not enough tokens");
         // spend tokens
         _transfer(_from, _to, _value);
