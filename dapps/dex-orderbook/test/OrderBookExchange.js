@@ -77,4 +77,61 @@ describe('OrderBookExchange', () =>{
             })
        })
     })
+
+
+    describe('Withdrawing tokens', ()=>{
+        let tx, result
+        let amount = tokens(10)
+        describe('Success', () =>{
+            beforeEach(async() =>{
+                //Deposit some tokens before withdrawal
+                // Approve token
+                tx = await token1.connect(user1).approve(exchange.address,amount)
+                result = await tx.wait() // wait for tx to mine
+                // Deposit token
+                tx = await exchange.connect(user1).depositToken(token1.address,amount)
+                result = await tx.wait() // wait for tx to mine
+                // Finally withdraw tokens
+                tx = await exchange.connect(user1).withdrawToken(token1.address,amount)
+                result = await tx.wait() // wait for tx to mine
+            })
+            it('withdraw tokens', async()=>{
+                expect(await token1.balanceOf(exchange.address)).to.equal(0)
+                expect(await exchange.usertokens(token1.address, user1.address)).to.equal(0)
+                expect(await exchange.balanceOf(token1.address, user1.address)).to.equal(0)
+            })
+
+            it('emits a Withdraw event', async ()=>{
+                const event = result.events[1] //2 events are emitted
+                expect(event.event).to.equal('Withdraw')
+
+                const args = event.args
+                expect(args.token).to.equal(token1.address)
+                expect(args.user).to.equal(user1.address)
+                expect(args.amount).to.equal(amount)
+                expect(args.balance).to.equal(0)
+            })
+        })
+        describe('Failure', () =>{
+            it('fails for insufficient balances',async ()=>{
+               await expect(exchange.connect(user1).withdrawToken(token1.address,amount)).to.be.reverted
+            })
+       })
+    })
+
+    describe('Token balances', ()=>{
+        let tx, result
+        let amount = tokens(21)
+        beforeEach(async() =>{
+            // Approve token
+            tx = await token1.connect(user1).approve(exchange.address,amount)
+            result = await tx.wait() // wait for tx to mine
+            // Deposit token
+            tx = await exchange.connect(user1).depositToken(token1.address,amount)
+            result = await tx.wait() // wait for tx to mine
+        })
+        it('tracks token balances', async()=>{
+            expect(await exchange.balanceOf(token1.address, user1.address)).to.equal(amount)
+        })
+    })
 })
