@@ -14,6 +14,7 @@ contract OrderBookExchange {
     // token addr => user addr => amount
     mapping(address => mapping(address => uint256)) public usertokens;
     mapping(uint256 => _Order) public orders;
+    mapping(uint256 => bool) public cancelledOrder; // true or false
 
     //Order structure
     struct _Order {
@@ -34,6 +35,15 @@ contract OrderBookExchange {
         uint256 balance
     );
     event Order(
+        uint256 id,
+        address user,
+        address tokenGet,
+        uint256 amountGet,
+        address tokenGive,
+        uint256 amountGive,
+        uint256 timestamp
+    );
+    event Cancel(
         uint256 id,
         address user,
         address tokenGet,
@@ -127,6 +137,29 @@ contract OrderBookExchange {
             _amountGet,
             _tokenGive,
             _amountGive,
+            block.timestamp
+        );
+    }
+
+    // Cancel Order :Pass the id to cancel
+    function cancelOrder(uint256 _id) public {
+        // Fetch order
+        _Order storage order = orders[_id];
+
+        // Order must exist and must be a valid user
+        require(order.id == _id, "Order does not exist");
+        require(order.user == msg.sender, "Invalid user");
+        // Cancel order
+        cancelledOrder[_id] = true;
+
+        // emit event
+        emit Cancel(
+            order.id,
+            msg.sender,
+            order.tokenGet,
+            order.amountGet,
+            order.tokenGive,
+            order.amountGive,
             block.timestamp
         );
     }
