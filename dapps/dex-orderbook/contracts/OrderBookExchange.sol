@@ -14,7 +14,8 @@ contract OrderBookExchange {
     // token addr => user addr => amount
     mapping(address => mapping(address => uint256)) public usertokens;
     mapping(uint256 => _Order) public orders;
-    mapping(uint256 => bool) public cancelledOrder; // true or false
+    mapping(uint256 => bool) public orderCancelled; // true or false
+    mapping(uint256 => bool) public orderCompleted; // true or false
 
     //Order structure
     struct _Order {
@@ -50,6 +51,16 @@ contract OrderBookExchange {
         uint256 amountGet,
         address tokenGive,
         uint256 amountGive,
+        uint256 timestamp
+    );
+    event Trade(
+        uint256 id,
+        address user, // user who executes an order
+        address tokenGet,
+        uint256 amountGet,
+        address tokenGive,
+        uint256 amountGive,
+        address creator, // user who creates an order
         uint256 timestamp
     );
 
@@ -150,7 +161,7 @@ contract OrderBookExchange {
         require(order.id == _id, "Order does not exist");
         require(order.user == msg.sender, "Invalid user");
         // Cancel order
-        cancelledOrder[_id] = true;
+        orderCancelled[_id] = true;
 
         // emit event
         emit Cancel(
@@ -160,6 +171,69 @@ contract OrderBookExchange {
             order.amountGet,
             order.tokenGive,
             order.amountGive,
+            block.timestamp
+        );
+    }
+
+    // Execute Orders
+    function executeOrder(uint256 _id) public {
+        // Fetch order
+        _Order storage order = orders[_id];
+
+        // To execute:
+        // 1. id must be valid
+        // 2. order cant be already completed
+        // 3. order cant be already cancelled
+        require(_id > 0 && _id <= orderCount, "Invalid order ID");
+        require(!orderCancelled[_id], "order already cancelled");
+        require(!orderCompleted[_id], "order already completed");
+
+        // Swap or trade tokens
+        _trade(
+            order.id,
+            order.user,
+            order.tokenGet, // say e.g. fDAI
+            order.amountGet,
+            order.tokenGive, // say e.g.  KN
+            order.amountGive
+        );
+        orderCompleted[order.id] = true;
+    }
+
+    function _trade(
+        uint256 _orderid,
+        address _user,
+        address _tokenGet,
+        uint256 _amountGet,
+        address _tokenGive,
+        uint256 _amountGive
+    ) internal {
+        // do trade here
+
+        // fee is paid by the user who executes the order
+        // fee is deducted from _amountGet
+        uint256 _feeAmount = (_amountGet * feePercent) / 100;
+        // decrement for person who fulfills order
+        usertokens[_tokenGet][msg.sender] -= _amountGet + _feeAmount;
+        // increment for person who requested order
+        usertokens[_tokenGet][_user] += _amountGet;
+
+        // Charge fees
+        usertokens[_tokenGet][feeAccount] += _feeAmount;
+
+        // decrement for person who requested order
+        usertokens[_tokenGive][_user] -= _amountGive;
+        // increment for person who fulfills order
+        usertokens[_tokenGive][msg.sender] += _amountGive;
+
+        emit Trade(
+            _orderid,
+            msg.sender, // user who executes an order
+            _tokenGet,
+            _amountGet,
+            _tokenGive,
+            _amountGive,
+            _user, // user who creates an order
             block.timestamp
         );
     }
