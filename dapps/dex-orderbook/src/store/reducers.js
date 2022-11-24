@@ -4,6 +4,7 @@ const providerInitialState = {
     provider:[],
     network:[],
     account:[],
+    etherbalance:[]
 }
 export const provider = createReducer(providerInitialState, (builder) => {
   builder
@@ -16,20 +17,45 @@ export const provider = createReducer(providerInitialState, (builder) => {
     .addCase('ACCOUNT_LOADED', (state, action) => {
       state.account.push(action.account)
     })
+    .addCase('ETHER_BALANCE_LOADED', (state, action) => {
+      state.etherbalance.push(action.balance)
+    })
     .addDefaultCase((state, action) => {})
 })
 
 const tokenInitialState = {
     loaded:false,
-    contract:null,
-    symbol: null
+    contracts:[],
+    symbols: []
 }
 export const tokens = createReducer(tokenInitialState, (builder) => {
   builder
-    .addCase('TOKEN_LOADED', (state, action) => {
+    .addCase('TOKEN_1_LOADED', (state, action) => {
         state.loaded = true
-        state.contract= action.token
-        state.symbol= action.symbol
+        state.contracts = [...state.contracts,action.token]
+        state.symbols = [...state.symbols,action.symbol]
+    })
+    .addCase('TOKEN_2_LOADED', (state, action) => {
+        state.loaded = true
+        state.contracts = [...state.contracts,action.token]
+        state.symbols = [...state.symbols,action.symbol]
+    })
+    .addCase('TOKEN_3_LOADED', (state, action) => {
+        state.loaded = true
+        state.contracts = [...state.contracts,action.token]
+        state.symbols = [...state.symbols,action.symbol]
     })
     .addDefaultCase((state, action) => {})
+})
+
+const exchangeInitialState = {
+    loaded:false,
+    contracts:[]
+}
+export const exchange = createReducer(exchangeInitialState, (builder) => {
+  builder
+    .addCase('EXCHANGE_LOADED', (state, action) => {
+        state.loaded = true
+        state.contracts = [...state.contracts,action.exchange]
+    })
 })

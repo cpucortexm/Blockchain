@@ -1,13 +1,14 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit'
 
 // Import Reducers
-import {provider,tokens} from './reducers'
+import {provider,tokens, exchange} from './reducers'
 
 const initialState = {}
 
 const reducer = combineReducers({
     provider,
-    tokens
+    tokens,
+    exchange
 })
 
 const store = configureStore({
