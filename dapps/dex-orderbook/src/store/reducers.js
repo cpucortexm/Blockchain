@@ -37,19 +37,14 @@ export const tokens = createReducer(tokenInitialState, (builder) => {
   builder
     .addCase('TOKEN_1_LOADED', (state, action) => {
         state.loaded = true
-        state.contracts = [...state.contracts,action.token]
-        state.symbols = [...state.symbols,action.symbol]
+        state.contracts = [action.token]
+        state.symbols = [action.symbol]
     })
     .addCase('TOKEN_2_LOADED', (state, action) => {
         state.loaded = true
         state.contracts = [...state.contracts,action.token]
         state.symbols = [...state.symbols,action.symbol]
-    })
-    .addCase('TOKEN_3_LOADED', (state, action) => {
-        state.loaded = true
-        state.contracts = [...state.contracts,action.token]
-        state.symbols = [...state.symbols,action.symbol]
-    })
+   })
     .addDefaultCase((state, action) => {})
 })
 

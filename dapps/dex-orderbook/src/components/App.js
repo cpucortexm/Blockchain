@@ -8,7 +8,8 @@ import {
   loadTokens,
   loadExchange} from '../store/interactions';
 
-import Navbar from './Navbar'
+import Navbar from './Navbar';
+import Markets from './Markets';
 
 function App() {
     const dispatch = useDispatch()
@@ -31,7 +32,6 @@ function App() {
       const contractAddrs = [
         config[chainId]["KN"].address,
         config[chainId]["fETH"].address,
-        config[chainId]["fDAI"].address
       ]
       await loadTokens(provider, contractAddrs, dispatch)
       // Load exchange contract
@@ -50,7 +50,7 @@ function App() {
 
         <section className='exchange__section--left grid'>
 
-          {/* Markets */}
+          <Markets />
 
           {/* Balance */}
 
