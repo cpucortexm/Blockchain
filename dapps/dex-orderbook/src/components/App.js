@@ -6,10 +6,12 @@ import {
   loadNetwork,
   loadAccount, 
   loadTokens,
-  loadExchange} from '../store/interactions';
+  loadExchange,
+  subscribeToEvents} from '../store/interactions';
 
 import Navbar from './Navbar';
 import Markets from './Markets';
+import Balance from './Balance';
 
 function App() {
     const dispatch = useDispatch()
@@ -36,7 +38,10 @@ function App() {
       await loadTokens(provider, contractAddrs, dispatch)
       // Load exchange contract
       const exchangeAddr = config[chainId]["exchange"].address
-      await loadExchange(provider, exchangeAddr, dispatch)
+     const exchange = await loadExchange(provider, exchangeAddr, dispatch)
+
+      // Listen to events
+      await subscribeToEvents(exchange, dispatch) 
    }
   useEffect(() => {
     loadBlockchaindata()
@@ -52,7 +57,7 @@ function App() {
 
           <Markets />
 
-          {/* Balance */}
+          <Balance />
 
           {/* Order */}
 

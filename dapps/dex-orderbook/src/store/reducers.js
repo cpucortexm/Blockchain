@@ -31,7 +31,8 @@ export const provider = createReducer(providerInitialState, (builder) => {
 const tokenInitialState = {
     loaded:false,
     contracts:[],
-    symbols: []
+    symbols: [],
+    balances:[]
 }
 export const tokens = createReducer(tokenInitialState, (builder) => {
   builder
@@ -40,22 +41,76 @@ export const tokens = createReducer(tokenInitialState, (builder) => {
         state.contracts = [action.token]
         state.symbols = [action.symbol]
     })
+
+    .addCase('TOKEN_1_BALANCE_LOADED', (state, action) => {
+        state.balances = [action.balance]
+    })
+
     .addCase('TOKEN_2_LOADED', (state, action) => {
         state.loaded = true
         state.contracts = [...state.contracts,action.token]
         state.symbols = [...state.symbols,action.symbol]
    })
+
+    .addCase('TOKEN_2_BALANCE_LOADED', (state, action) => {
+        state.balances = [...state.balances, action.balance]
+    })
     .addDefaultCase((state, action) => {})
 })
 
 const exchangeInitialState = {
     loaded:false,
-    contracts:[]
+    contracts:null, // We have only a single exchange contract, so array not needed
+    balances:[],
+    transaction : {transactionType:null,isPending:null,success:null, error:null},
+    transferInProgress: null,
+    events : []
 }
+
 export const exchange = createReducer(exchangeInitialState, (builder) => {
   builder
     .addCase('EXCHANGE_LOADED', (state, action) => {
         state.loaded = true
-        state.contracts = [...state.contracts,action.exchange]
+        state.contracts = action.exchange
     })
+
+    .addCase('EXCHANGE_TOKEN_1_BALANCE_LOADED', (state, action) => {
+        state.loaded = true
+        state.balances = [action.balance]
+    })
+
+    .addCase('EXCHANGE_TOKEN_2_BALANCE_LOADED', (state, action) => {
+        state.loaded = true
+        state.balances = [...state.balances, action.balance]
+    })
+
+     // TRANSFERS (Withdrawal and Deposits)
+     .addCase('TRANSFER_PENDING', (state,action)=>{
+      state.transaction = {
+        transactionType: 'Transfer',
+        isPending: true,
+        success : false
+      }
+      state.transferInProgress = true
+     })
+
+     .addCase('TRANSFER_COMPLETE', (state,action)=>{
+      state.transaction = {
+        transactionType: 'Transfer',
+        isPending: false,
+        success : true,
+        error:false
+      }
+      state.transferInProgress = false
+      state.events = [action.event, ...state.events]
+     })
+     .addCase('TRANSFER_FAIL', (state,action)=>{
+      state.transaction = {
+        transactionType: 'Transfer',
+        isPending: false,
+        success : false,
+        error: true
+      }
+      state.transferInProgress = false
+     })
 })
