@@ -47,10 +47,8 @@ export const loadExchange = async (provider, address, dispatch)=>{
 
 
 export const subscribeToEvents = async (exchange, dispatch) =>{
-    console.log('In here desposit1')
     await exchange.on('Deposit', (token, user, amount, balance, event)=>{
         // Notify app that transfer was successful
-        console.log('In here desposit2', token,user,amount.toString(),balance.toString(),event)
         dispatch({type: 'TRANSFER_COMPLETE', event})
     })
 }
