@@ -56,6 +56,17 @@ const Balance = () => {
             setToken1TransferAmount(0)
         }
     }
+    const withdrawHandler = (e, token) =>{
+        e.preventDefault()  // stops page refreshing which is the default behavior
+        if(token.address === tokens[0].address){
+            transferTokens(provider, exchange, 'Withdraw', token, token0TransferAmount, dispatch)
+            setToken0TransferAmount(0)
+        }else{
+            transferTokens(provider, exchange, 'Withdraw', token, token1TransferAmount, dispatch)
+            setToken1TransferAmount(0)
+        }
+    }
+
     useEffect(()=>{
         if (exchange && account && tokens[0] && tokens[1]){
             loadBalances(exchange, tokens, account, dispatch)
@@ -80,7 +91,7 @@ const Balance = () => {
                 <p><small>Exchange</small><br/>{exchangeBalances && exchangeBalances[0]}</p>
             </div>
 
-            <form onSubmit={(e) =>depositHandler(e,tokens[0])}>
+            <form onSubmit={isDeposit?(e) =>depositHandler(e,tokens[0]) : (e)=>withdrawHandler(e,tokens[0])}>
             <label htmlFor="token0">{symbols && symbols[0]} Amount</label>
             <input type="text" 
                    id='token0' 
@@ -111,7 +122,7 @@ const Balance = () => {
                 <p><small>Exchange</small><br/>{exchangeBalances && exchangeBalances[1]}</p>
             </div>
 
-            <form onSubmit={(e) =>depositHandler(e,tokens[1])}>
+            <form onSubmit={isDeposit? (e) =>depositHandler(e,tokens[1]): (e) =>withdrawHandler(e,tokens[1])}>
             <label htmlFor="token1"></label>
             <input type="text" 
                    id='token1'
