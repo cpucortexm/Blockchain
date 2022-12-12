@@ -55,6 +55,11 @@ export const subscribeToEvents = async (exchange, dispatch) =>{
         // Notify app that transfer was successful
         dispatch({type: 'TRANSFER_COMPLETE', event})
     })
+
+    await exchange.on('Order', (id, user, tokenGet, amountGet, tokenGive, amountGive, timestamp, event) => {
+    const order = event.args
+    dispatch({ type: 'NEW_ORDER_SUCCESS', order, event })
+  })
 }
 
 //-----------------------------------------------------------------
@@ -100,4 +105,39 @@ export const transferTokens = async(provider, exchange, transferType, token, amo
         dispatch({type:'TRANSFER_FAIL'})
     }
 
+}
+//-----------------------------------------------------------------
+// ORDERS (BUY and SELL)
+
+export const makeBuyOrder = async(provider, exchange, tokens, order, dispatch) =>{
+    const tokenGet = tokens[0].address
+    const amountGet = ethers.utils.parseUnits(order.amount,'ether');
+    const tokenGive = tokens[1].address
+    const amountGive = ethers.utils.parseUnits((order.amount * order.price).toString(), 'ether')
+
+    dispatch({ type: 'NEW_ORDER_REQUEST'})
+    try {
+        const signer = await provider.getSigner()
+        const tx = await exchange.connect(signer).makeOrder(tokenGet, amountGet, tokenGive, amountGive)
+        await tx.wait()
+    } catch (error) {
+        dispatch({ type: 'NEW_ORDER_FAIL' })
+  }
+}
+
+export const makeSellOrder = async (provider, exchange, tokens, order, dispatch) => {
+  const tokenGet = tokens[1].address
+  const amountGet = ethers.utils.parseUnits((order.amount * order.price).toString(), 'ether')
+  const tokenGive = tokens[0].address
+  const amountGive = ethers.utils.parseUnits(order.amount, 'ether')
+
+  dispatch({ type: 'NEW_ORDER_REQUEST' })
+
+  try {
+    const signer = await provider.getSigner()
+    const tx = await exchange.connect(signer).makeOrder(tokenGet, amountGet, tokenGive, amountGive)
+    await tx.wait()
+  } catch (error) {
+    dispatch({ type: 'NEW_ORDER_FAIL' })
+  }
 }

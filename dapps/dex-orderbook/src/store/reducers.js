@@ -64,10 +64,14 @@ const exchangeInitialState = {
     balances:[],
     transaction : {transactionType:null,isPending:null,success:null, error:null},
     transferInProgress: null,
-    events : []
+    events : [],
+    allOrders : {
+      data:[]
+    }
 }
 
 export const exchange = createReducer(exchangeInitialState, (builder) => {
+  let index, data
   builder
     .addCase('EXCHANGE_LOADED', (state, action) => {
         state.loaded = true
@@ -112,5 +116,42 @@ export const exchange = createReducer(exchangeInitialState, (builder) => {
         error: true
       }
       state.transferInProgress = false
+     })
+     // MAKING ORDER cases
+     .addCase('NEW_ORDER_REQUEST', (state,action)=>{
+      state.transaction = {
+        transactionType: 'New Order',
+        isPending: true,
+        success : false
+      }
+     })
+     .addCase('NEW_ORDER_SUCCESS', (state,action)=>{
+    // Prevent duplicate orders
+      index = state.allOrders.data.findIndex(order => order.id === action.order.id)
+
+      if(index === -1) {
+        data = [...state.allOrders.data, action.order]
+      } else {
+        data = state.allOrders.data
+      }
+      state.allOrders = {
+        ...state.allOrders, 
+        data
+      }
+      state.transaction = {
+        transactionType: 'New Order',
+        isPending: false,
+        success : true
+      }
+      state.events = [action.event, ...state.events]
+     })
+     .addCase('NEW_ORDER_FAIL', (state,action)=>{
+      state.allOrders = 
+      state.transaction = {
+        transactionType: 'New Order',
+        isPending: false,
+        success : false,
+        error: true
+      }
      })
 })
