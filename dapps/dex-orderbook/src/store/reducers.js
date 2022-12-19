@@ -66,6 +66,15 @@ const exchangeInitialState = {
     transferInProgress: null,
     events : [],
     allOrders : {
+      loaded:false,
+      data:[]
+    },
+    cancelledOrders:{
+      loaded:false,
+      data:[]
+    },
+    filledOrders:{
+      loaded:false,
       data:[]
     }
 }
@@ -77,7 +86,26 @@ export const exchange = createReducer(exchangeInitialState, (builder) => {
         state.loaded = true
         state.contracts = action.exchange
     })
-
+    // ORDERS LOADED (CANCELLED, FILLED & ALL)
+    .addCase('CANCELLED_ORDERS_LOADED', (state, action) => {
+        state.cancelledOrders = {
+          loaded : true, 
+          data : action.cancelledOrders
+        }
+    })
+    .addCase('FILLED_ORDERS_LOADED', (state, action) => {
+        state.filledOrders = {
+          loaded : true, 
+          data : action.filledOrders
+        }
+    })
+    .addCase('ALL_ORDERS_LOADED', (state, action) => {
+        state.allOrders = {
+          loaded : true, 
+          data : action.allOrders
+        }
+    })
+    // BALANCE CASES
     .addCase('EXCHANGE_TOKEN_1_BALANCE_LOADED', (state, action) => {
         state.loaded = true
         state.balances = [action.balance]
@@ -126,8 +154,8 @@ export const exchange = createReducer(exchangeInitialState, (builder) => {
       }
      })
      .addCase('NEW_ORDER_SUCCESS', (state,action)=>{
-    // Prevent duplicate orders
-      index = state.allOrders.data.findIndex(order => order.id === action.order.id)
+        // Prevent duplica te orders
+      index = state.allOrders.data.findIndex(order => order.id.toString() === action.order.id.toString())
 
       if(index === -1) {
         data = [...state.allOrders.data, action.order]

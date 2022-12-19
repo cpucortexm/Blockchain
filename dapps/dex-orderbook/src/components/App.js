@@ -7,12 +7,14 @@ import {
   loadAccount, 
   loadTokens,
   loadExchange,
-  subscribeToEvents} from '../store/interactions';
+  subscribeToEvents,
+  loadAllOrders} from '../store/interactions';
 
 import Navbar from './Navbar';
 import Markets from './Markets';
 import Balance from './Balance';
 import Order from './Order';
+import OrderBook from './OrderBook';
 
 function App() {
     const dispatch = useDispatch()
@@ -39,8 +41,9 @@ function App() {
       await loadTokens(provider, contractAddrs, dispatch)
       // Load exchange contract
       const exchangeAddr = config[chainId]["exchange"].address
-     const exchange = await loadExchange(provider, exchangeAddr, dispatch)
-
+      const exchange = await loadExchange(provider, exchangeAddr, dispatch)
+      // LOAD all orders : open, filled, cancelled
+      loadAllOrders(provider, exchange, dispatch)
       // Listen to events
       await subscribeToEvents(exchange, dispatch) 
    }
@@ -56,11 +59,11 @@ function App() {
 
         <section className='exchange__section--left grid'>
 
-          <Markets />
+          <Markets/>
 
           <Balance />
 
-           <Order />
+          <Order />
 
         </section>
         <section className='exchange__section--right grid'>
@@ -71,7 +74,7 @@ function App() {
 
           {/* Trades */}
 
-          {/* OrderBook */}
+          <OrderBook />
 
         </section>
       </main>
