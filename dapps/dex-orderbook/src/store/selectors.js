@@ -6,7 +6,7 @@ import moment from 'moment'
 const GREEN = '#25CE8F'
 const RED = '#F45353'
 
-
+const account = state => get(state, 'provider.account')
 const tokens = state => get(state, 'tokens.contracts')
 const allOrders = state => get(state, 'exchange.allOrders.data', [])
 const cancelledOrders = state => get(state, 'exchange.cancelledOrders.data', [])
@@ -24,10 +24,54 @@ const openOrders = state =>{
     })
     return openOrders
 }
+
+// ------------------------------------------------------------------------------
+// MY OPEN ORDERS
+export const myOpenOrdersSelector = createSelector(
+    account,
+    tokens,
+    openOrders,
+    (account, tokens, orders) =>{
+        if (!tokens[0] || !tokens[1]) { return }
+        // Filter orders created by current account
+        orders = orders.filter((o) => o.user === account)
+
+        // Filter orders by token addresses
+        orders = orders.filter((o) => o.tokenGet === tokens[0].address || o.tokenGet === tokens[1].address)
+        orders = orders.filter((o) => o.tokenGive === tokens[0].address || o.tokenGive === tokens[1].address)
+
+        // Decorate orders - add display attributes
+        orders = decorateMyOpenOrders(orders, tokens)
+
+        // Sort orders by date descending
+        orders = orders.sort((a, b) => b.timestamp - a.timestamp)
+        console.log(orders)
+        return orders
+    })
+
+const decorateMyOpenOrders = (orders, tokens) => {
+  return(
+        orders.map((order) => {
+            order = decorateOrder(order, tokens)
+            order = decorateMyOpenOrder(order, tokens)
+            return(order)
+        })
+    )
+}
+
+const decorateMyOpenOrder = (order, tokens) => {
+    let orderType = order.tokenGive === tokens[1].address ? 'buy' : 'sell'
+  return({
+        ...order,
+        orderType,
+        orderTypeClass: (orderType === 'buy' ? GREEN : RED)
+    })
+}
+
 const decorateOrder = (order, tokens) => {
     let token0Amount, token1Amount
     // Note: KNT should be considered token0, fETH is considered token1
-    // Example: // get fETH in exchange for KNT (sell)
+    // Example: give KNT (sell) in exchange for fETH
     if (order.tokenGive === tokens[0].address) { //plz check
         token0Amount = order.amountGive // The amount of KNT we are giving
         token1Amount = order.amountGet // The amount of fETH we want...
@@ -56,7 +100,7 @@ export const filledOrdersSelector = createSelector(
     tokens,
     (orders, tokens) =>{
     
-    if (!tokens[0] || !tokens[1]) { return }    
+    if (!tokens[0] || !tokens[1]) { return }
     // Filter orders by selected tokens, select the right token pair
     orders = orders.filter((o) => o.tokenGet === tokens[0].address || o.tokenGet === tokens[1].address)
     orders = orders.filter((o) => o.tokenGive === tokens[0].address || o.tokenGive === tokens[1].address)
@@ -145,7 +189,6 @@ export const orderBookSelector = createSelector(
       ...orders,
       sellOrders: sellOrders.sort((a, b) => b.tokenPrice - a.tokenPrice)
     }
-    console.log(orders.sellOrders)
     return orders
   })
 
