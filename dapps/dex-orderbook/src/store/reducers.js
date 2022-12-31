@@ -174,7 +174,6 @@ export const exchange = createReducer(exchangeInitialState, (builder) => {
       state.events = [action.event, ...state.events]
      })
      .addCase('NEW_ORDER_FAIL', (state,action)=>{
-      state.allOrders = 
       state.transaction = {
         transactionType: 'New Order',
         isPending: false,
@@ -182,4 +181,35 @@ export const exchange = createReducer(exchangeInitialState, (builder) => {
         error: true
       }
      })
+
+     // CANCEL ORDER cases
+     .addCase('CANCEL_ORDER_REQUEST', (state,action)=>{
+      state.transaction = {
+        transactionType: 'Cancel',
+        isPending: true,
+        success : false
+      }
+     })
+    .addCase('ORDER_CANCEL_SUCCESS', (state, action) => {
+      state.transaction = {
+        transactionType: 'Cancel',
+        isPending: false,
+        success : true
+      }
+      state.cancelledOrders = {
+        ...state.cancelledOrders,
+        data:[
+            ...state.cancelledOrders.data,
+            action.order
+        ]
+      }
+      state.events = [action.event, ...state.events]
+    })
+    .addCase('ORDER_CANCEL_FAIL', (state, action) => {
+      state.transaction = {
+        transactionType: 'Cancel',
+        isPending: false,
+        success : true,
+        error: true
+      }})
 })
