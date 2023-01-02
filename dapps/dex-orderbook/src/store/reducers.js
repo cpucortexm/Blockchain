@@ -154,7 +154,7 @@ export const exchange = createReducer(exchangeInitialState, (builder) => {
       }
      })
      .addCase('NEW_ORDER_SUCCESS', (state,action)=>{
-        // Prevent duplica te orders
+        // Prevent duplicate orders
       index = state.allOrders.data.findIndex(order => order.id.toString() === action.order.id.toString())
 
       if(index === -1) {
@@ -183,7 +183,7 @@ export const exchange = createReducer(exchangeInitialState, (builder) => {
      })
 
      // CANCEL ORDER cases
-     .addCase('CANCEL_ORDER_REQUEST', (state,action)=>{
+     .addCase('ORDER_CANCEL_REQUEST', (state,action)=>{
       state.transaction = {
         transactionType: 'Cancel',
         isPending: true,
@@ -209,7 +209,46 @@ export const exchange = createReducer(exchangeInitialState, (builder) => {
       state.transaction = {
         transactionType: 'Cancel',
         isPending: false,
-        success : true,
+        success : false,
+        error: true
+      }})
+
+
+     // FILL ORDER cases
+     .addCase('ORDER_FILL_REQUEST', (state,action)=>{
+      state.transaction = {
+        transactionType: 'Fill Order',
+        isPending: true,
+        success : false
+      }
+     })
+
+    .addCase('ORDER_FILL_SUCCESS', (state, action) => {
+        // Prevent duplicate orders
+      index = state.filledOrders.data.findIndex(order => order.id.toString() === action.order.id.toString())
+
+      if(index === -1) {
+        data = [...state.filledOrders.data, action.order]
+      } else {
+        data = state.filledOrders.data
+      }
+      state.transaction = {
+        transactionType: 'Fill Order',
+        isPending: false,
+        success : true
+      }
+      state.filledOrders = {
+        ...state.filledOrders,
+        data
+      }
+      state.events = [action.event, ...state.events]
+    })
+
+    .addCase('ORDER_FILL_FAIL', (state, action) => {
+      state.transaction = {
+        transactionType: 'Fill Order',
+        isPending: false,
+        success : false,
         error: true
       }})
 })
