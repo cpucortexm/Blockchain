@@ -62,7 +62,7 @@ const exchangeInitialState = {
     loaded:false,
     contracts:null, // We have only a single exchange contract, so array not needed
     balances:[],
-    transaction : {transactionType:null,isPending:null,success:null, error:null},
+    transaction : {transactionType:null,isPending:null,success:null, isError:null},
     transferInProgress: null,
     events : [],
     allOrders : {
@@ -131,7 +131,7 @@ export const exchange = createReducer(exchangeInitialState, (builder) => {
         transactionType: 'Transfer',
         isPending: false,
         success : true,
-        error:false
+        isError:false
       }
       state.transferInProgress = false
       state.events = [action.event, ...state.events]
@@ -141,7 +141,7 @@ export const exchange = createReducer(exchangeInitialState, (builder) => {
         transactionType: 'Transfer',
         isPending: false,
         success : false,
-        error: true
+        isError: true
       }
       state.transferInProgress = false
      })
@@ -178,7 +178,7 @@ export const exchange = createReducer(exchangeInitialState, (builder) => {
         transactionType: 'New Order',
         isPending: false,
         success : false,
-        error: true
+        isError: true
       }
      })
 
@@ -210,7 +210,7 @@ export const exchange = createReducer(exchangeInitialState, (builder) => {
         transactionType: 'Cancel',
         isPending: false,
         success : false,
-        error: true
+        isError: true
       }})
 
 
@@ -249,6 +249,6 @@ export const exchange = createReducer(exchangeInitialState, (builder) => {
         transactionType: 'Fill Order',
         isPending: false,
         success : false,
-        error: true
+        isError: true
       }})
 })

@@ -129,7 +129,7 @@ async function main() {
     // user1 makes 10 orders
 
     for (let i= 1; i<=10; i++){
-        tx = await exchange.connect(user1).makeOrder(fETH.address, tokens(10), kn.address, tokens(10 * i))
+        tx = await exchange.connect(user1).makeOrder(fETH.address, tokens(10 * i), kn.address, tokens(10))
         result = await tx.wait() // wait for tx to mine
         console.log(`Make order for ${user1.address}`)
         await wait(1) // wait 1 sec
@@ -137,7 +137,7 @@ async function main() {
 
     // user2 makes 10 orders
     for (let i= 1; i<=10; i++){
-        tx = await exchange.connect(user2).makeOrder(kn.address, tokens(10*i),fETH.address, tokens(10))
+        tx = await exchange.connect(user2).makeOrder(kn.address, tokens(10),fETH.address, tokens(10 * i))
         result = await tx.wait() // wait for tx to mine
         console.log(`Make order for ${user2.address}`)
         await wait(1) // wait 1 sec

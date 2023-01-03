@@ -22,7 +22,7 @@ const Balance = () => {
     const withdrawRef = useRef(null)
 
     const tabHandler = (e)=>{
-        if (e.target.className != depositRef.current.className){ // Withdraw case
+        if (e.target.className !== depositRef.current.className){ // Withdraw case
             e.target.className ='tab tab--active'
             depositRef.current.className = 'tab'
             setIsDeposit(false) // We are in withdraw
@@ -71,7 +71,7 @@ const Balance = () => {
         if (exchange && account && tokens[0] && tokens[1]){
             loadBalances(exchange, tokens, account, dispatch)
         }
-    }, [exchange, tokens, account, transferInProgress])
+    }, [exchange, tokens, account, transferInProgress, dispatch])
     return (
         <div className='component exchange__transfers'>
         <div className='component__header flex-between'>
@@ -123,7 +123,7 @@ const Balance = () => {
             </div>
 
             <form onSubmit={isDeposit? (e) =>depositHandler(e,tokens[1]): (e) =>withdrawHandler(e,tokens[1])}>
-            <label htmlFor="token1"></label>
+            <label htmlFor="token1">{symbols && symbols[1]} Amount</label>
             <input type="text" 
                    id='token1'
                    placeholder='0.0000'
