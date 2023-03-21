@@ -1,7 +1,31 @@
 .container{
     padding: 0 2rem;
 }
+/* css for description component */
+.description-h1{
+    color: blue;
+    text-transform: uppercase;
+    font-family: 'Times New Roman', Times, serif;
+    font-size:x-large;
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 10px;
 
+}
+.description-h2{
+    display: flex;
+    color: black;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: medium ;
+    justify-content: space-between;
+    margin-top: -10px;
+}
+.description-erc20{
+    margin-left: 400px;
+}
+.description-erc721{
+    margin-right: 400px;
+}
 /* css for Nav component */
 .nav-bar {
     display:flex;
