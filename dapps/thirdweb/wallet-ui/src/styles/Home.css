@@ -1,6 +1,25 @@
 .container{
     padding: 0 2rem;
 }
+
+/* css for components TokenCardContainer, ERC20Tokenscard and ERC721Tokenscard*/
+.token-card-container{
+    display: flex;
+    flex-direction: row;
+    margin-left: 60px;
+}
+
+.token-card{
+    width: 500px;
+    height: 280px;
+    margin-left: 30px;
+    padding: 20px;
+    box-shadow: 0 0 0 0.4px grey;
+    background: whitesmoke;
+    box-sizing: content-box;
+    border-radius: 4px;
+}
+
 /* css for description component */
 .description-h1{
     color: blue;
