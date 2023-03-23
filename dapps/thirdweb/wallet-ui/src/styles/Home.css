@@ -11,13 +11,47 @@
 
 .token-card{
     width: 500px;
-    height: 280px;
+    height: 320px;
     margin-left: 30px;
-    padding: 20px;
     box-shadow: 0 0 0 0.4px grey;
     background: whitesmoke;
-    box-sizing: content-box;
+    box-sizing: border-box;
     border-radius: 4px;
+}
+/* first row has ETH Account: */
+.first-row {
+    display: flex;
+    flex-direction: row;
+    height: 20px;
+    box-shadow: 0 0.4px grey;
+    width: 100%;
+    background-color: lightgray;
+}
+.eth-account{
+    margin-left: 50px;
+    font-size: small;
+}
+.eth-account strong{
+    font-weight: bold;
+}
+/* second row has symbol, token and amount/metadata for erc20/721 tokens respectively*/
+.second-row {
+    display: flex;
+    flex-direction: row;
+    height: 20px;
+    margin-top: 10px;
+    justify-content: flex-start;
+    width:100%;
+    box-shadow: 0 0.4px grey;
+    font-weight: bold;
+}
+/* in second row: first element should start at 0, but other elements should be at 40px apart */
+.second-row > *:not(:first-child) {
+  margin-left: 40px;
+}
+
+.third-row {
+    flex: 1;
 }
 
 /* css for description component */
