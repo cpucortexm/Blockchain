@@ -1,11 +1,11 @@
-import { ERC20TokensCard } from "./ERC20TokensCard";
-import { ERC721TokensCard } from "./ERC721TokensCard";
+import { FluxTokenCard } from "./FluxTokenCard";
+import { OceanicNFTCard } from "./OceanicNFTCard";
 
-export const TokenCardContainer = () =>{
+export const TokenCardContainer =  () =>{
     return (
         <div className="token-card-container" >
-            <ERC20TokensCard />
-            <ERC721TokensCard />
+            <FluxTokenCard />
+            <OceanicNFTCard />
         </div>
   );
 }

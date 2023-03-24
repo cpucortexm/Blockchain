@@ -9,6 +9,7 @@ import { ThirdwebProvider } from "@thirdweb-dev/react";
 // const activeChain = "ethereum";
 
 // Note: We are using our own local custom chain
+/*
 const activeChain = {
         // === Required information for connecting to the network === \\
         chainId: 313, // Chain ID of the network
@@ -28,7 +29,8 @@ const activeChain = {
         chain: "", // Chain
         name: "ganache-local", // Name of the network
       }
-
+*/
+const activeChain = "localhost"
 const container = document.getElementById("root");
 const root = createRoot(container!);
 root.render(

@@ -30,6 +30,7 @@
 .eth-account{
     margin-left: 50px;
     font-size: small;
+    color:forestgreen;
 }
 .eth-account strong{
     font-weight: bold;
@@ -50,8 +51,17 @@
   margin-left: 40px;
 }
 
+/* in the third row: start displaying the erc20 tokens for the wallet address */
 .third-row {
     flex: 1;
+    padding: 10px;
+}
+.symbol-img{
+    width: 20px;
+    height: 20px;
+}
+.third-row > *:not(:first-child){
+    margin-left: 60px;
 }
 
 /* css for description component */
