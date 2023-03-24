@@ -1,6 +1,6 @@
 import { useAddress } from "@thirdweb-dev/react"
 
-export const ERC721TokensCard = () =>{
+export const OceanicNFTCard = () =>{
     const address = useAddress()
     return(
         <div className="token-card">
