@@ -1,5 +1,5 @@
 export default {
-  "abi": [
+    "abi": [
     {
       "inputs": [
         {
@@ -531,6 +531,5 @@ export default {
       "stateMutability": "payable",
       "type": "receive"
     }
-  ]
- 
+  ],
 }

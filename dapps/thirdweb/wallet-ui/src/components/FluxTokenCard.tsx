@@ -4,6 +4,7 @@ import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import { useEffect, useState } from "react";
 import ft from "../tokens/FluxToken";
 const { ethers } = require("ethers");
+const deployed_address = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
 
 export const FluxTokenCard = () =>{
     const [token, setToken] = useState('');
@@ -13,10 +14,12 @@ export const FluxTokenCard = () =>{
 
     const fetchData = async () => {
         const contract = await sdk.getContract(
-                                "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                                deployed_address,
                                 ft.abi
                                 );
+        //set token info
         setToken(await contract.call("symbol"))
+        // set erc20 token balance for the wallet address
         const amount = await contract.call("balanceOf",address )
         setBalance(ethers.utils.formatEther(amount))
         //const name = await contract.call("name")

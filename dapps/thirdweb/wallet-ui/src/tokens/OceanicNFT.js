@@ -1,6 +1,5 @@
 export default{
-
-  "abi": [
+    "abi": [
     {
       "inputs": [
         {
@@ -189,6 +188,19 @@ export default{
         }
       ],
       "name": "DefaultRoyalty",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "nftId",
+          "type": "uint256"
+        }
+      ],
+      "name": "NFTCreated",
       "type": "event"
     },
     {
@@ -404,13 +416,7 @@ export default{
         }
       ],
       "name": "createNFT",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
+      "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
     },
@@ -502,6 +508,25 @@ export default{
           "internalType": "uint16",
           "name": "",
           "type": "uint16"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_owner",
+          "type": "address"
+        }
+      ],
+      "name": "getTokenOwners",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
         }
       ],
       "stateMutability": "view",
@@ -661,6 +686,24 @@ export default{
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_owner",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "removeTokenOwner",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -956,5 +999,5 @@ export default{
       "stateMutability": "nonpayable",
       "type": "function"
     }
-  ],
+  ]
 }
