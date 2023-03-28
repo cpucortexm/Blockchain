@@ -2,16 +2,16 @@ import { useAddress } from "@thirdweb-dev/react"
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import { BigNumber } from "ethers";
 import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import nft from "../tokens/OceanicNFT";
-const { ethers } = require("ethers");
 
 const deployed_address= "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
 
 export const OceanicNFTCard = () =>{
-    const [token, setToken] = useState('');
-    //const [metadata, setMetadata] = useState('')
+    const [symbol, setSymbol] = useState('');
     const [metadata, setMetadata] = useState<Array<string>>([]); // Use an array to store metadata for all tokens
     const [tokenNumbers, setTokenNumbers] = useState<Array<number>>([])
+     const navigate = useNavigate();
     
     // useMemo() for memoization ie optimization to ensure that it does not get created
     // everytime we load this component.
@@ -24,7 +24,7 @@ export const OceanicNFTCard = () =>{
                                 nft.abi
                                 );
         // set token info
-        setToken(await contract.call("symbol"))
+        setSymbol(await contract.call("symbol"))
 
         // get all tokenids for the wallet address and metadata for each token id
         const allTokens = await contract.call("getTokenOwners", address)
@@ -41,7 +41,22 @@ export const OceanicNFTCard = () =>{
     // Trigger fetchData on wallet connect
     useEffect(() =>{
         fetchData()
-    }, [sdk, address] ) // call fetchData when something in sdk changes e.g. wallet connected automatically or manually
+    }, [address]) // call fetchData when something in sdk changes e.g. wallet connected automatically or manually
+
+    const TransferToken = () =>{
+        console.log("transfer token")
+    }
+
+    const approveToken = () =>{
+        console.log("approve token")
+    }
+
+    const mintToken = () =>{
+        console.log("mint token")
+    }
+    const handleNFTClick = (index: number) => {
+        navigate(`/nft/${index}`, { state: { metadata } });
+    };
 
     return(
         <div className="token-card">
@@ -53,15 +68,36 @@ export const OceanicNFTCard = () =>{
                 <span>Token</span>
                 <span>MetaData</span>
             </div>
-  
-                {address && tokenNumbers.map((token, index) =>(
-                     <div className="third-row">
-                        <img className="symbol-img" src={process.env.PUBLIC_URL + 'icons/OCNFT.png'} alt="" />
-                        <span >{token}</span> 
-                        <span style={{ marginLeft: '40px' }}>{metadata[index]}</span> 
-                     </div>
-                ))
-                }
+
+            {address && tokenNumbers.map((token, index) =>(
+                <div className="third-row">
+                <img className="symbol-img" src={process.env.PUBLIC_URL + 'icons/OCNFT.png'} alt="" />
+                <span style={{ marginLeft: '60px' }}>{symbol}</span> 
+                {/* <span style={{ marginLeft: '60px' }}>{metadata[index]}</span> */}
+                {/*
+                <span style={{ marginLeft: '50px' }}
+                      onClick={() => handleNFTClick(index)}>
+                    NFT
+                </span>
+                */}
+                <span style={{ marginLeft: '40px' }}>
+                    <a 
+                        href="#" 
+                        onClick={(e) => { 
+                            e.preventDefault(); 
+                            handleNFTClick(index); 
+                        }} 
+                        style={{ textDecoration: 'underline', color: 'blue', cursor: 'pointer' }}
+                    >
+                    NFT{index}
+                    </a>
+                </span>
+                 <button className="tokenOps" onClick={TransferToken}>Send</button> 
+                <button className="tokenOps" onClick={approveToken}>Approve</button> 
+                <button className="tokenOps" onClick={mintToken}>Mint</button> 
+                </div>
+            ))
+            }
         </div>
     )
 }
