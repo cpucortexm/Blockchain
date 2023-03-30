@@ -71,8 +71,8 @@
     border-radius: 5px;
 }
 
-/* css description for sendFluxToken */
-.send-token-second-row{
+/* css description for send/approve/transfer FluxToken */
+.token-second-row{
     display: flex;
     flex-direction: column;
     font-family:Arial, Helvetica, sans-serif;
@@ -83,7 +83,7 @@
     box-shadow: 0 0.4px grey;
     box-sizing: border-box;
 }
-.send-token-third-row{
+.token-third-row{
     display: flex;
     flex-direction: column;
 }

@@ -2,8 +2,10 @@ import { useAddress } from "@thirdweb-dev/react";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import { useEffect, useMemo, useState } from "react";
 import ft from "../tokens/FluxToken";
-import {SendFluxToken} from './SendFluxToken';
+import {SendFluxToken} from './tokenops/SendFluxToken';
 import { ethers } from 'ethers'; // Make sure to import BaseContract
+import { ApproveFluxToken } from "./tokenops/ApproveFluxToken";
+import { MintFluxToken } from "./tokenops/MintFluxToken";
 
 const deployed_address = ft.deployed_address;
 
@@ -12,6 +14,9 @@ export const FluxTokenCard = () =>{
     const [balance, setBalance] = useState('')
     const address = useAddress(); // wallet address
     const [showSendContent, setShowSendContent] = useState(false);
+    const [showApproveContent, setShowApproveContent] = useState(false);
+    const [showMintContent, setShowMintContent] = useState(false);
+
     // useMemo() for memoization ie optimization to ensure that it does not get created
     // everytime we load this component.
     const sdk = useMemo(() => new ThirdwebSDK("localhost"), []); // wrap sdk object in useMemo
@@ -30,26 +35,31 @@ export const FluxTokenCard = () =>{
 
     useEffect(() => {
         fetchData();
-    }, [address, showSendContent]);
+    }, [address, showSendContent, showApproveContent, showMintContent]);
 
     const sendToken = () =>{
         setShowSendContent(true) // display the send flux token content
     }
 
     const approveToken = () =>{
-        console.log("approve token")
+        setShowApproveContent(true) // disply the approve flux token content
     }
 
     const mintToken = () =>{
-        console.log("mint token")
+        setShowMintContent(true)
     }
     return(
         <div>
 
-            {showSendContent ? (
-                <SendFluxToken setShowSendContent={setShowSendContent}
-                />
-            ) : (
+            {
+                showSendContent ? (
+                    <SendFluxToken setShowSendContent={setShowSendContent}/>
+            ) : showApproveContent ? (
+                    <ApproveFluxToken setShowApproveContent={setShowApproveContent} />
+            ) : showMintContent ? (
+                    <MintFluxToken setShowMintContent={setShowMintContent} />
+            ) :
+            (
                     <div className="token-card">
                         <div className="first-row">
                             <span className="eth-account">ETH Account: <strong>{address? address : " not connected"}</strong></span>
