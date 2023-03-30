@@ -2,10 +2,9 @@ import { useAddress } from "@thirdweb-dev/react"
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import { BigNumber } from "ethers";
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import nft from "../tokens/OceanicNFT";
-
-const deployed_address= "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
+const deployed_address= nft.deployed_address
 
 export const OceanicNFTCard = () =>{
     const [symbol, setSymbol] = useState('');
