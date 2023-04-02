@@ -1,9 +1,9 @@
 import { useAddress } from "@thirdweb-dev/react";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import { useEffect, useMemo, useState } from "react";
-import ft from "../tokens/FluxToken";
+import ft from "src/tokens/FluxToken";
+import { ethers } from 'ethers';
 import {SendFluxToken} from './tokenops/SendFluxToken';
-import { ethers } from 'ethers'; // Make sure to import BaseContract
 import { ApproveFluxToken } from "./tokenops/ApproveFluxToken";
 import { MintFluxToken } from "./tokenops/MintFluxToken";
 
@@ -65,18 +65,18 @@ export const FluxTokenCard = () =>{
                             <span className="eth-account">ETH Account: <strong>{address? address : " not connected"}</strong></span>
                         </div>
                         <div className="second-row">
-                        <span>Symbol</span>
                             <span>Token</span>
+                            <span>Symbol</span>
                             <span>Amount</span>
+                            <button className="tokenMintBtn" onClick={mintToken}>Mint</button> 
                         </div>
                         {address && (parseInt(balance)>0) && (
                             <div className="third-row">
                                 <img className="symbol-img" src={process.env.PUBLIC_URL + 'icons/FT.png'} alt="" />
-                                <span style={{ marginLeft: '60px' }}>{symbol}</span> 
-                                <span style={{ marginLeft: '60px' }}>{balance}</span>
+                                <span>{symbol}</span> 
+                                <span>{balance}</span>
                                 <button className="tokenOps" onClick={sendToken}>Send</button>
                                 <button className="tokenOps" onClick={approveToken}>Approve</button> 
-                                <button className="tokenOps" onClick={mintToken}>Mint</button> 
                             </div>
                             )
                         }

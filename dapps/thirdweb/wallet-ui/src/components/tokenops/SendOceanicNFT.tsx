@@ -1,21 +1,21 @@
 import { useAddress, Web3Button } from "@thirdweb-dev/react";
 import { useState } from "react";
-import ft from "src/tokens/FluxToken";
-const deployed_address = ft.deployed_address;
+import nft from "src/tokens/OceanicNFT";
+const deployed_address= nft.deployed_address
 
-interface SendMintTokenProps {
-    setShowMintContent: (show: boolean) => void;
+interface SendOceanicNFTProps{
+    setShowSendContent : (show : boolean) => void
+    tokenId : number
 }
-export const MintFluxToken :React.FC<SendMintTokenProps> = ({setShowMintContent}) => {
-    const [mintToAddress, setMintAddress] = useState('');
-    const [amountToMint, setAmountToMint] = useState('');
+
+export const SendOceanicNFT :React.FC<SendOceanicNFTProps> = ({setShowSendContent,tokenId}) => {
+    const [receiverAddress, setReceiverAddress] = useState('')
 
     const backToWallet = () =>{
-        setShowMintContent(false); // go back to the home page if back or after mint success
+        setShowSendContent(false); // go back to the home page if back or after transfer success
     }
 
     const address = useAddress(); // wallet address
-
     return(
         <div className="token-card">
 
@@ -24,42 +24,36 @@ export const MintFluxToken :React.FC<SendMintTokenProps> = ({setShowMintContent}
             </div>
 
             <div className="token-second-row">
-               <span>Mint FT</span>
-               <span style={{opacity: 0.4}}>Only mint FT to an Ethereum address </span>
+               <span>SEND NFT</span>
+               <span style={{opacity: 0.4}}>Only send NFT to an Ethereum address </span>
             </div>
 
             <div className="token-third-row">
                 <input 
                     type="text" 
                     placeholder="Receiver Address" 
-                    value={mintToAddress}
-                    onChange={(e) => setMintAddress(e.target.value)}
+                    value={receiverAddress}
+                    onChange={(e) => setReceiverAddress(e.target.value)}
                 />
-                <div className="input-container">
-                    <input 
-                        type="text" 
-                        placeholder="Amount to mint" 
-                        value={amountToMint}
-                        onChange={(e) => setAmountToMint(e.target.value)}
-                    />
-                    <span className="ft-symbol">FT</span>
-                </div>
                 <input type="number" defaultValue={20} min={1} step="any" />
                 <input type="number" defaultValue={200000} min={1} step="any" />
             </div>
+
             <div  className="button-container">
                     <button className="buttonBack" onClick={backToWallet}>Back</button>
                      <Web3Button 
                         contractAddress={deployed_address}
-                        contractAbi={ft.abi}
-                        action={(contract) =>contract.erc20.mintTo(mintToAddress, amountToMint)}
+                        contractAbi={nft.abi}                        
+                        action={(contract) =>contract.call("transferNFT",address, receiverAddress, tokenId)}
                         onSuccess={() => backToWallet()}
                         className="web3Button"
                     >
-                        Mint
+                        Transfer
                     </Web3Button>
             </div>
- 
         </div>
+
+    
     )
 }
+

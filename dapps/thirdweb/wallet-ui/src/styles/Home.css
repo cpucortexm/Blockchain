@@ -17,6 +17,7 @@
     background: whitesmoke;
     box-sizing: border-box;
     border-radius: 4px;
+    overflow-y: scroll; /* Add this for a scrollbar */
 }
 /* first row has ETH Account: */
 .first-row {
@@ -50,25 +51,47 @@
 .second-row > *:not(:first-child) {
   margin-left: 40px;
 }
+.second-row > .tokenMintBtn {
+  margin-left: 100px;
+}
+.tokenMintBtn  {
+    color: white;
+    background-color:indianred;
+    border-radius: 5px;
+    width: 90px;
+    height: 20px;
+}
 
 /* in the third row: start displaying the erc20 tokens for the wallet address */
 .third-row {
-    flex: 1;
     padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 .symbol-img{
     width: 20px;
     height: 20px;
 }
-/*
+.symbol, .balance {
+    display: inline-block;
+    width: 40px;
+    text-align: center;
+    overflow: hidden; /* Added */
+    text-overflow: ellipsis; /* Added */
+    white-space: nowrap; /* Added */
+    flex-shrink: 0; /* added */
+}
 .third-row > *:not(:first-child){
     margin-left: 60px;
-}*/
+}
 .tokenOps  {
     color: white;
     background-color:indianred;
-    margin-left: 40px;
     border-radius: 5px;
+    width: 70px;
+    height: 20px;
+    flex-shrink: 0; /* added */
 }
 
 /* css description for send/approve/transfer FluxToken */
@@ -115,9 +138,9 @@ input[type="text"] {
     text-align: center !important;
     font-weight: normal;
     font-size: 14px;
-    width: 200px;
-    height: 25px;
     cursor: pointer;
+    height: 25px;
+    width: 60px;
 }
 .web3Button {
   color: white !important;
@@ -126,8 +149,10 @@ input[type="text"] {
   text-align: center !important;
   font-weight: normal !important;
   font-size: 14px !important;
-  height: 25px !important;
   cursor: pointer;
+  height: 25px !important;
+  min-width:0!important;
+  width:60px!important;
 }
 /* css for description component */
 .description-h1{
